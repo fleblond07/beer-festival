@@ -23,6 +23,22 @@ describe('useFestivals', () => {
       const { error } = useFestivals()
       expect(error.value).toBeNull()
     })
+
+    it('should have images for all festivals', () => {
+      const { festivals } = useFestivals()
+      festivals.value.forEach(festival => {
+        expect(festival.image).toBeDefined()
+        expect(festival.image).toBeTruthy()
+        expect(festival.image).toMatch(/^https?:\/\//)
+      })
+    })
+
+    it('should have unique images for each festival', () => {
+      const { festivals } = useFestivals()
+      const images = festivals.value.map(f => f.image)
+      const uniqueImages = new Set(images)
+      expect(uniqueImages.size).toBe(images.length)
+    })
   })
 
   describe('nextFestival', () => {
