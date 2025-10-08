@@ -50,13 +50,18 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { NextFestival } from '@/components/NextFestival'
 import { FestivalMap } from '@/components/FestivalMap'
 import { FestivalList } from '@/components/FestivalList'
 import { useFestivals } from '@/composables/useFestivals'
 import type { Festival } from '@/types'
 
-const { nextFestival, sortedFestivals } = useFestivals()
+const { nextFestival, sortedFestivals, fetchFestivals } = useFestivals()
+
+onMounted(() => {
+  fetchFestivals()
+})
 
 const handleMarkerClick = (festival: Festival) => {
   console.log('Marker clicked:', festival.name)
