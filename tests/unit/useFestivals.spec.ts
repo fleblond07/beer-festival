@@ -81,20 +81,21 @@ describe('useFestivals', () => {
   })
 
   describe('sortedFestivals', () => {
-    it('should place upcoming festivals before past festivals', () => {
+    it('should filter out past festivals', () => {
       const { festivals, sortedFestivals } = useFestivals()
       const now = dayjs()
       const pastDate = now.subtract(1, 'month').format('YYYY-MM-DD')
       const futureDate = now.add(1, 'month').format('YYYY-MM-DD')
+      const futureEndDate = now.add(2, 'months').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...festivals.value[0], id: '1', startDate: pastDate },
-        { ...festivals.value[1], id: '2', startDate: futureDate },
+        { ...festivals.value[0], id: '1', startDate: pastDate, endDate: pastDate },
+        { ...festivals.value[1], id: '2', startDate: futureDate, endDate: futureEndDate },
       ]
 
       const sorted = sortedFestivals.value
-      expect(sorted[0].id).toBe('2') // Future festival first
-      expect(sorted[1].id).toBe('1') // Past festival second
+      expect(sorted.length).toBe(1)
+      expect(sorted[0].id).toBe('2') // Only future festival
     })
 
     it('should sort upcoming festivals by date (earliest first)', () => {
@@ -115,37 +116,38 @@ describe('useFestivals', () => {
       expect(sorted[2].id).toBe('3')
     })
 
-    it('should sort past festivals by date (most recent first)', () => {
+    it('should not include festivals that have ended', () => {
       const { festivals, sortedFestivals } = useFestivals()
       const pastDate1 = dayjs().subtract(10, 'days').format('YYYY-MM-DD')
       const pastDate2 = dayjs().subtract(5, 'days').format('YYYY-MM-DD')
       const pastDate3 = dayjs().subtract(15, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...festivals.value[0], id: '1', startDate: pastDate1 },
-        { ...festivals.value[1], id: '2', startDate: pastDate2 },
-        { ...festivals.value[2], id: '3', startDate: pastDate3 },
+        { ...festivals.value[0], id: '1', startDate: pastDate1, endDate: pastDate1 },
+        { ...festivals.value[1], id: '2', startDate: pastDate2, endDate: pastDate2 },
+        { ...festivals.value[2], id: '3', startDate: pastDate3, endDate: pastDate3 },
       ]
 
       const sorted = sortedFestivals.value
-      expect(sorted[0].id).toBe('3')
-      expect(sorted[1].id).toBe('1')
-      expect(sorted[2].id).toBe('2')
+      expect(sorted.length).toBe(0)
     })
 
-    it('should place past festival after upcoming festival (coverage for line 32)', () => {
+    it('should include ongoing festivals (started but not ended)', () => {
       const { festivals, sortedFestivals } = useFestivals()
-      const pastDate = dayjs().subtract(5, 'days').format('YYYY-MM-DD')
-      const futureDate = dayjs().add(5, 'days').format('YYYY-MM-DD')
+      const pastStartDate = dayjs().subtract(5, 'days').format('YYYY-MM-DD')
+      const futureEndDate = dayjs().add(5, 'days').format('YYYY-MM-DD')
+      const futureDate = dayjs().add(10, 'days').format('YYYY-MM-DD')
+      const futureEndDate2 = dayjs().add(15, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...festivals.value[0], id: '1', startDate: pastDate },
-        { ...festivals.value[1], id: '2', startDate: futureDate },
+        { ...festivals.value[0], id: '1', startDate: pastStartDate, endDate: futureEndDate },
+        { ...festivals.value[1], id: '2', startDate: futureDate, endDate: futureEndDate2 },
       ]
 
       const sorted = sortedFestivals.value
-      expect(sorted[0].id).toBe('2') // Upcoming first
-      expect(sorted[1].id).toBe('1') // Past second
+      expect(sorted.length).toBe(2)
+      expect(sorted[0].id).toBe('2') // Upcoming festival comes first
+      expect(sorted[1].id).toBe('1') // Ongoing festival (already started, so not upcoming)
     })
   })
 

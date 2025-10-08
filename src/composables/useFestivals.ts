@@ -19,17 +19,19 @@ export function useFestivals() {
 
   const sortedFestivals = computed(() => {
     const now = dayjs()
-    return [...festivals.value].sort((a, b) => {
-      const aDate = dayjs(a.startDate)
-      const bDate = dayjs(b.startDate)
-      const aIsUpcoming = aDate.isAfter(now)
-      const bIsUpcoming = bDate.isAfter(now)
+    return [...festivals.value]
+      .filter(festival => dayjs(festival.endDate).isAfter(now))
+      .sort((a, b) => {
+        const aDate = dayjs(a.startDate)
+        const bDate = dayjs(b.startDate)
+        const aIsUpcoming = aDate.isAfter(now)
+        const bIsUpcoming = bDate.isAfter(now)
 
-      if (aIsUpcoming && !bIsUpcoming) return -1
-      if (!aIsUpcoming && bIsUpcoming) return 1
+        if (aIsUpcoming && !bIsUpcoming) return -1
+        if (!aIsUpcoming && bIsUpcoming) return 1
 
-      return aDate.diff(bDate)
-    })
+        return aDate.diff(bDate)
+      })
   })
 
   const getFestivalsByRegion = (region: string): Festival[] => {

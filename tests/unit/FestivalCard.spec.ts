@@ -160,7 +160,7 @@ describe('FestivalCard', () => {
 
       const status = wrapper.find('[data-testid="festival-status"]')
       expect(status.classes()).toContain('bg-accent-cyan/20')
-      expect(status.classes()).toContain('text-accent-cyan')
+      expect(status.classes()).toContain('text-gray-200')
     })
 
     it('should show gray status for past festivals', () => {
@@ -174,7 +174,7 @@ describe('FestivalCard', () => {
 
       const status = wrapper.find('[data-testid="festival-status"]')
       expect(status.classes()).toContain('bg-gray-700')
-      expect(status.classes()).toContain('text-gray-300')
+      expect(status.classes()).toContain('text-gray-200')
     })
   })
 

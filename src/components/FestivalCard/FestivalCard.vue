@@ -27,7 +27,7 @@
         </span>
       </div>
 
-      <div class="flex items-center text-gray-400 mb-2">
+      <div class="flex items-center text-gray-300 mb-2">
         <svg
           class="w-4 h-4 mr-2"
           fill="none"
@@ -53,7 +53,7 @@
         >
       </div>
 
-      <div class="flex items-center text-gray-400 mb-3">
+      <div class="flex items-center text-gray-300 mb-3">
         <svg
           class="w-4 h-4 mr-2"
           fill="none"
@@ -76,7 +76,7 @@
       </p>
 
       <div class="flex items-center justify-between">
-        <div v-if="festival.breweryCount" class="flex items-center text-accent-cyan">
+        <div v-if="festival.breweryCount" class="flex items-center text-gray-200">
           <svg
             class="w-5 h-5 mr-1"
             fill="currentColor"
@@ -96,7 +96,7 @@
           :href="festival.website"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-accent-purple hover:text-accent-pink text-sm font-semibold transition-colors"
+          class="text-gray-200 hover:text-accent-pink text-sm font-semibold transition-colors"
           @click.stop
           data-testid="festival-website"
         >
@@ -133,9 +133,9 @@ const statusText = computed(() => getDaysUntilText(props.festival.startDate))
 
 const statusClass = computed(() => {
   if (isUpcoming(props.festival.startDate)) {
-    return 'bg-accent-cyan/20 text-accent-cyan'
+    return 'bg-accent-cyan/20 text-gray-200'
   }
-  return 'bg-gray-700 text-gray-300'
+  return 'bg-gray-700 text-gray-200'
 })
 </script>
 
