@@ -1,17 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useFestivals } from '@/composables/useFestivals'
+import { mockFestivals } from '@/mocks/festivals'
 import dayjs from 'dayjs'
+import { flushPromises } from '@vue/test-utils'
 
 describe('useFestivals', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    // Mock fetch API
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockFestivals),
+      } as Response)
+    )
   })
 
   describe('initialization', () => {
-    it('should initialize with mock festivals', () => {
+    it('should initialize with empty festivals array', () => {
       const { festivals } = useFestivals()
       expect(festivals.value).toBeDefined()
-      expect(festivals.value.length).toBeGreaterThan(0)
+      expect(festivals.value).toEqual([])
     })
 
     it('should initialize with loading set to false', () => {
@@ -24,8 +33,19 @@ describe('useFestivals', () => {
       expect(error.value).toBeNull()
     })
 
-    it('should have images for all festivals', () => {
-      const { festivals } = useFestivals()
+    it('should fetch and load festivals on mount', async () => {
+      const { festivals, loading, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
+      expect(global.fetch).toHaveBeenCalled()
+      expect(festivals.value.length).toBeGreaterThan(0)
+      expect(loading.value).toBe(false)
+    })
+
+    it('should have images for all festivals after fetch', async () => {
+      const { festivals, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       festivals.value.forEach(festival => {
         expect(festival.image).toBeDefined()
         expect(festival.image).toBeTruthy()
@@ -33,8 +53,10 @@ describe('useFestivals', () => {
       })
     })
 
-    it('should have unique images for each festival', () => {
-      const { festivals } = useFestivals()
+    it('should have unique images for each festival after fetch', async () => {
+      const { festivals, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const images = festivals.value.map(f => f.image)
       const uniqueImages = new Set(images)
       expect(uniqueImages.size).toBe(images.length)
@@ -42,8 +64,10 @@ describe('useFestivals', () => {
   })
 
   describe('nextFestival', () => {
-    it('should return the next upcoming festival', () => {
-      const { nextFestival } = useFestivals()
+    it('should return the next upcoming festival', async () => {
+      const { festivals, nextFestival, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const now = dayjs()
 
       if (nextFestival.value) {
@@ -52,8 +76,10 @@ describe('useFestivals', () => {
       }
     })
 
-    it('should return null if there are no upcoming festivals', () => {
-      const { festivals, nextFestival } = useFestivals()
+    it('should return null if there are no upcoming festivals', async () => {
+      const { festivals, nextFestival, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const pastDate = dayjs().subtract(1, 'year').format('YYYY-MM-DD')
       festivals.value = festivals.value.map(festival => ({
         ...festival,
@@ -64,8 +90,10 @@ describe('useFestivals', () => {
       expect(nextFestival.value).toBeNull()
     })
 
-    it('should return the closest upcoming festival when multiple exist', () => {
-      const { festivals, nextFestival } = useFestivals()
+    it('should return the closest upcoming festival when multiple exist', async () => {
+      const { festivals, nextFestival, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const futureDate1 = dayjs().add(10, 'days').format('YYYY-MM-DD')
       const futureDate2 = dayjs().add(5, 'days').format('YYYY-MM-DD')
       const futureDate3 = dayjs().add(15, 'days').format('YYYY-MM-DD')
@@ -81,16 +109,18 @@ describe('useFestivals', () => {
   })
 
   describe('sortedFestivals', () => {
-    it('should filter out past festivals', () => {
-      const { festivals, sortedFestivals } = useFestivals()
+    it('should filter out past festivals', async () => {
+      const { festivals, sortedFestivals, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const now = dayjs()
       const pastDate = now.subtract(1, 'month').format('YYYY-MM-DD')
       const futureDate = now.add(1, 'month').format('YYYY-MM-DD')
       const futureEndDate = now.add(2, 'months').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...festivals.value[0], id: '1', startDate: pastDate, endDate: pastDate },
-        { ...festivals.value[1], id: '2', startDate: futureDate, endDate: futureEndDate },
+        { ...mockFestivals[0], id: '1', startDate: pastDate, endDate: pastDate },
+        { ...mockFestivals[1], id: '2', startDate: futureDate, endDate: futureEndDate },
       ]
 
       const sorted = sortedFestivals.value
@@ -98,16 +128,19 @@ describe('useFestivals', () => {
       expect(sorted[0].id).toBe('2') // Only future festival
     })
 
-    it('should sort upcoming festivals by date (earliest first)', () => {
-      const { festivals, sortedFestivals } = useFestivals()
+    it('should sort upcoming festivals by date (earliest first)', async () => {
+      const { festivals, sortedFestivals, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const futureDate1 = dayjs().add(10, 'days').format('YYYY-MM-DD')
       const futureDate2 = dayjs().add(5, 'days').format('YYYY-MM-DD')
       const futureDate3 = dayjs().add(15, 'days').format('YYYY-MM-DD')
+      const futureEndDate = dayjs().add(20, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...festivals.value[0], id: '1', startDate: futureDate1 },
-        { ...festivals.value[1], id: '2', startDate: futureDate2 },
-        { ...festivals.value[2], id: '3', startDate: futureDate3 },
+        { ...mockFestivals[0], id: '1', startDate: futureDate1, endDate: futureEndDate },
+        { ...mockFestivals[1], id: '2', startDate: futureDate2, endDate: futureEndDate },
+        { ...mockFestivals[2], id: '3', startDate: futureDate3, endDate: futureEndDate },
       ]
 
       const sorted = sortedFestivals.value
@@ -116,32 +149,36 @@ describe('useFestivals', () => {
       expect(sorted[2].id).toBe('3')
     })
 
-    it('should not include festivals that have ended', () => {
-      const { festivals, sortedFestivals } = useFestivals()
+    it('should not include festivals that have ended', async () => {
+      const { festivals, sortedFestivals, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const pastDate1 = dayjs().subtract(10, 'days').format('YYYY-MM-DD')
       const pastDate2 = dayjs().subtract(5, 'days').format('YYYY-MM-DD')
       const pastDate3 = dayjs().subtract(15, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...festivals.value[0], id: '1', startDate: pastDate1, endDate: pastDate1 },
-        { ...festivals.value[1], id: '2', startDate: pastDate2, endDate: pastDate2 },
-        { ...festivals.value[2], id: '3', startDate: pastDate3, endDate: pastDate3 },
+        { ...mockFestivals[0], id: '1', startDate: pastDate1, endDate: pastDate1 },
+        { ...mockFestivals[1], id: '2', startDate: pastDate2, endDate: pastDate2 },
+        { ...mockFestivals[2], id: '3', startDate: pastDate3, endDate: pastDate3 },
       ]
 
       const sorted = sortedFestivals.value
       expect(sorted.length).toBe(0)
     })
 
-    it('should include ongoing festivals (started but not ended)', () => {
-      const { festivals, sortedFestivals } = useFestivals()
+    it('should include ongoing festivals (started but not ended)', async () => {
+      const { festivals, sortedFestivals, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const pastStartDate = dayjs().subtract(5, 'days').format('YYYY-MM-DD')
       const futureEndDate = dayjs().add(5, 'days').format('YYYY-MM-DD')
       const futureDate = dayjs().add(10, 'days').format('YYYY-MM-DD')
       const futureEndDate2 = dayjs().add(15, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...festivals.value[0], id: '1', startDate: pastStartDate, endDate: futureEndDate },
-        { ...festivals.value[1], id: '2', startDate: futureDate, endDate: futureEndDate2 },
+        { ...mockFestivals[0], id: '1', startDate: pastStartDate, endDate: futureEndDate },
+        { ...mockFestivals[1], id: '2', startDate: futureDate, endDate: futureEndDate2 },
       ]
 
       const sorted = sortedFestivals.value
@@ -152,8 +189,10 @@ describe('useFestivals', () => {
   })
 
   describe('getFestivalsByRegion', () => {
-    it('should return festivals for a specific region', () => {
-      const { festivals, getFestivalsByRegion } = useFestivals()
+    it('should return festivals for a specific region', async () => {
+      const { festivals, getFestivalsByRegion, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const testRegion = 'Île-de-France'
 
       festivals.value[0].region = testRegion
@@ -165,14 +204,18 @@ describe('useFestivals', () => {
       })
     })
 
-    it('should return empty array for region with no festivals', () => {
-      const { getFestivalsByRegion } = useFestivals()
+    it('should return empty array for region with no festivals', async () => {
+      const { getFestivalsByRegion, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const result = getFestivalsByRegion('NonExistentRegion')
       expect(result).toEqual([])
     })
 
-    it('should return all matching festivals for a region', () => {
-      const { festivals, getFestivalsByRegion } = useFestivals()
+    it('should return all matching festivals for a region', async () => {
+      const { festivals, getFestivalsByRegion, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const testRegion = 'TestRegion'
 
       festivals.value[0].region = testRegion
@@ -185,8 +228,10 @@ describe('useFestivals', () => {
   })
 
   describe('getFestivalById', () => {
-    it('should return festival with matching id', () => {
-      const { festivals, getFestivalById } = useFestivals()
+    it('should return festival with matching id', async () => {
+      const { festivals, getFestivalById, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const testId = festivals.value[0].id
       const result = getFestivalById(testId)
 
@@ -194,14 +239,18 @@ describe('useFestivals', () => {
       expect(result?.id).toBe(testId)
     })
 
-    it('should return undefined for non-existent id', () => {
-      const { getFestivalById } = useFestivals()
+    it('should return undefined for non-existent id', async () => {
+      const { getFestivalById, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const result = getFestivalById('non-existent-id')
       expect(result).toBeUndefined()
     })
 
-    it('should return the correct festival when multiple exist', () => {
-      const { festivals, getFestivalById } = useFestivals()
+    it('should return the correct festival when multiple exist', async () => {
+      const { festivals, getFestivalById, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
       const targetFestival = festivals.value[2]
       const result = getFestivalById(targetFestival.id)
 
