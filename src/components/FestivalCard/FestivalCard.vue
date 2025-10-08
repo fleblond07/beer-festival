@@ -1,6 +1,6 @@
 <template>
   <div
-    class="festival-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+    class="festival-card bg-dark-card rounded-lg shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-accent-cyan/20 transition-all duration-300 cursor-pointer border border-dark-lighter"
     @click="$emit('click', festival)"
     data-testid="festival-card"
   >
@@ -14,7 +14,7 @@
     </div>
     <div class="p-6">
       <div class="flex justify-between items-start mb-2">
-        <h3 class="text-xl font-bold text-gray-800" data-testid="festival-name">
+        <h3 class="text-xl font-bold text-white" data-testid="festival-name">
           {{ festival.name }}
         </h3>
         <span
@@ -27,7 +27,7 @@
         </span>
       </div>
 
-      <div class="flex items-center text-gray-600 mb-2">
+      <div class="flex items-center text-gray-400 mb-2">
         <svg
           class="w-4 h-4 mr-2"
           fill="none"
@@ -53,7 +53,7 @@
         >
       </div>
 
-      <div class="flex items-center text-gray-600 mb-3">
+      <div class="flex items-center text-gray-400 mb-3">
         <svg
           class="w-4 h-4 mr-2"
           fill="none"
@@ -71,12 +71,12 @@
         <span class="text-sm" data-testid="festival-dates">{{ formattedDateRange }}</span>
       </div>
 
-      <p class="text-gray-700 text-sm mb-4 line-clamp-2" data-testid="festival-description">
+      <p class="text-gray-300 text-sm mb-4 line-clamp-2" data-testid="festival-description">
         {{ festival.description }}
       </p>
 
       <div class="flex items-center justify-between">
-        <div v-if="festival.breweryCount" class="flex items-center text-amber-600">
+        <div v-if="festival.breweryCount" class="flex items-center text-accent-cyan">
           <svg
             class="w-5 h-5 mr-1"
             fill="currentColor"
@@ -96,7 +96,7 @@
           :href="festival.website"
           target="_blank"
           rel="noopener noreferrer"
-          class="text-amber-600 hover:text-amber-700 text-sm font-semibold"
+          class="text-accent-purple hover:text-accent-pink text-sm font-semibold transition-colors"
           @click.stop
           data-testid="festival-website"
         >
@@ -133,9 +133,9 @@ const statusText = computed(() => getDaysUntilText(props.festival.startDate))
 
 const statusClass = computed(() => {
   if (isUpcoming(props.festival.startDate)) {
-    return 'bg-green-100 text-green-800'
+    return 'bg-accent-cyan/20 text-accent-cyan'
   }
-  return 'bg-gray-100 text-gray-800'
+  return 'bg-gray-700 text-gray-300'
 })
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="min-h-screen" data-testid="app">
-    <header class="bg-gradient-to-r from-amber-600 to-orange-700 text-white shadow-lg">
+    <header class="bg-gradient-to-r from-accent-cyan to-accent-purple text-white shadow-2xl">
       <div class="max-w-7xl mx-auto px-4 py-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
@@ -11,7 +11,7 @@
             </svg>
             <div>
               <h1 class="text-3xl font-bold" data-testid="site-title">Festivals de Bière</h1>
-              <p class="text-amber-100 text-sm" data-testid="site-tagline">
+              <p class="text-white/80 text-sm" data-testid="site-tagline">
                 Découvrez les meilleurs festivals de France
               </p>
             </div>
@@ -36,12 +36,12 @@
       />
     </main>
 
-    <footer class="bg-gray-800 text-white py-8 mt-16">
+    <footer class="bg-dark-card text-white py-8 mt-16 border-t border-dark-lighter">
       <div class="max-w-7xl mx-auto px-4 text-center">
-        <p class="text-gray-400" data-testid="footer-text">
+        <p class="text-gray-300" data-testid="footer-text">
           © 2025 Festivals de Bière. Fait avec ❤️ pour les amateurs de bière artisanale.
         </p>
-        <p class="text-gray-500 text-sm mt-2" data-testid="footer-note">
+        <p class="text-gray-400 text-sm mt-2" data-testid="footer-note">
           Les données sont fictives et à titre d'exemple uniquement.
         </p>
       </div>

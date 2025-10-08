@@ -150,7 +150,7 @@ describe('FestivalCard', () => {
       expect(wrapper.find('[data-testid="festival-status"]').exists()).toBe(false)
     })
 
-    it('should show green status for upcoming festivals', () => {
+    it('should show cyan status for upcoming festivals', () => {
       const festival = createMockFestival({
         startDate: dayjs().add(10, 'days').format('YYYY-MM-DD'),
       })
@@ -159,8 +159,8 @@ describe('FestivalCard', () => {
       })
 
       const status = wrapper.find('[data-testid="festival-status"]')
-      expect(status.classes()).toContain('bg-green-100')
-      expect(status.classes()).toContain('text-green-800')
+      expect(status.classes()).toContain('bg-accent-cyan/20')
+      expect(status.classes()).toContain('text-accent-cyan')
     })
 
     it('should show gray status for past festivals', () => {
@@ -173,8 +173,8 @@ describe('FestivalCard', () => {
       })
 
       const status = wrapper.find('[data-testid="festival-status"]')
-      expect(status.classes()).toContain('bg-gray-100')
-      expect(status.classes()).toContain('text-gray-800')
+      expect(status.classes()).toContain('bg-gray-700')
+      expect(status.classes()).toContain('text-gray-300')
     })
   })
 
