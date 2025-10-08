@@ -1,15 +1,15 @@
 <template>
   <div class="next-festival-container w-full py-16 px-4" data-testid="next-festival-container">
     <div v-if="festival" class="max-w-6xl mx-auto">
-      <h2 class="text-center text-4xl font-bold text-gray-800 mb-2" data-testid="section-title">
+      <h2 class="text-center text-4xl font-bold text-white mb-2" data-testid="section-title">
         Prochain Festival
       </h2>
-      <p class="text-center text-gray-600 mb-8" data-testid="section-subtitle">
+      <p class="text-center text-gray-400 mb-8" data-testid="section-subtitle">
         Ne manquez pas le prochain événement !
       </p>
 
       <div
-        class="next-festival-hero bg-gradient-to-r from-amber-500 to-orange-600 rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02]"
+        class="next-festival-hero bg-gradient-to-r from-accent-purple to-accent-pink rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02] border border-accent-purple/30"
         data-testid="hero-card"
       >
         <div class="md:flex">
@@ -28,7 +28,7 @@
           <div class="md:w-1/2 p-8 md:p-12 text-white">
             <div class="flex items-center mb-4">
               <span
-                class="bg-white text-orange-600 px-4 py-2 rounded-full text-sm font-bold"
+                class="bg-dark-card text-accent-cyan px-4 py-2 rounded-full text-sm font-bold border border-accent-cyan/50"
                 data-testid="countdown-badge"
               >
                 {{ countdownText }}
@@ -79,7 +79,7 @@
                 :href="festival.website"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="bg-white text-orange-600 px-6 py-3 rounded-lg font-bold hover:bg-orange-50 transition-colors"
+                class="bg-dark-card text-white px-6 py-3 rounded-lg font-bold hover:bg-accent-cyan transition-colors border border-white/30"
                 data-testid="website-link"
               >
                 En savoir plus →
@@ -91,9 +91,9 @@
     </div>
 
     <div v-else class="max-w-6xl mx-auto text-center" data-testid="no-festival">
-      <div class="bg-gray-100 rounded-2xl p-12">
+      <div class="bg-dark-card rounded-2xl p-12 border border-dark-lighter">
         <svg
-          class="w-16 h-16 mx-auto mb-4 text-gray-400"
+          class="w-16 h-16 mx-auto mb-4 text-gray-500"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -105,8 +105,8 @@
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
           />
         </svg>
-        <h3 class="text-2xl font-bold text-gray-700 mb-2">Aucun festival à venir</h3>
-        <p class="text-gray-600">
+        <h3 class="text-2xl font-bold text-white mb-2">Aucun festival à venir</h3>
+        <p class="text-gray-400">
           Revenez bientôt pour découvrir les prochains festivals de bière !
         </p>
       </div>

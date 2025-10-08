@@ -1,15 +1,15 @@
 <template>
   <div class="festival-map-container w-full py-16 px-4" data-testid="festival-map-container">
     <div class="max-w-6xl mx-auto">
-      <h2 class="text-center text-4xl font-bold text-gray-800 mb-2" data-testid="section-title">
+      <h2 class="text-center text-4xl font-bold text-white mb-2" data-testid="section-title">
         Carte des Festivals
       </h2>
-      <p class="text-center text-gray-600 mb-8" data-testid="section-subtitle">
+      <p class="text-center text-gray-400 mb-8" data-testid="section-subtitle">
         Explorez les festivals de bière partout en France
       </p>
 
       <div
-        class="map-wrapper bg-white rounded-xl shadow-lg overflow-hidden"
+        class="map-wrapper bg-dark-card rounded-xl shadow-2xl overflow-hidden border border-dark-lighter"
         style="height: 600px"
         data-testid="map-wrapper"
       >
@@ -67,7 +67,7 @@ const addMarkers = () => {
       <div class="festival-popup">
         <h3 style="font-weight: bold; margin-bottom: 8px;">${festival.name}</h3>
         <p style="margin-bottom: 4px;">${festival.city}, ${festival.region}</p>
-        ${festival.breweryCount ? `<p style="color: #d97706;">${festival.breweryCount} brasseries</p>` : ''}
+        ${festival.breweryCount ? `<p style="color: #00d2d3;">${festival.breweryCount} brasseries</p>` : ''}
       </div>
     `)
 
@@ -90,7 +90,7 @@ const createCustomIcon = () => {
       'data:image/svg+xml;base64,' +
       btoa(`
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="16" cy="16" r="14" fill="#f59e0b" stroke="#ffffff" stroke-width="3"/>
+        <circle cx="16" cy="16" r="14" fill="#00d2d3" stroke="#ffffff" stroke-width="3"/>
         <path d="M16 10 L16 22 M10 16 L22 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
       </svg>
     `),

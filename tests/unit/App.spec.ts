@@ -133,7 +133,7 @@ describe('Default App testing', () => {
     it('should have proper footer styling', () => {
       const wrapper = mount(App)
       const footer = wrapper.find('footer')
-      expect(footer.classes()).toContain('bg-gray-800')
+      expect(footer.classes()).toContain('bg-dark-card')
     })
   })
 
