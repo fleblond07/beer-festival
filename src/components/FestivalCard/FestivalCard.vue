@@ -1,8 +1,8 @@
 <template>
   <div
     class="festival-card bg-dark-card rounded-lg shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-accent-cyan/20 transition-all duration-300 cursor-pointer border border-dark-lighter"
-    @click="$emit('click', festival)"
     data-testid="festival-card"
+    @click="$emit('click', festival)"
   >
     <div v-if="festival.image" class="h-48 overflow-hidden">
       <img
@@ -97,8 +97,8 @@
           target="_blank"
           rel="noopener noreferrer"
           class="text-gray-200 hover:text-accent-pink text-sm font-semibold transition-colors"
-          @click.stop
           data-testid="festival-website"
+          @click.stop
         >
           Site web →
         </a>
@@ -122,7 +122,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 defineEmits<{
-  (e: 'click', festival: Festival): void
+  (_e: 'click', _festival: Festival): void
 }>()
 
 const formattedDateRange = computed(() =>

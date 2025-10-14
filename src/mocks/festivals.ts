@@ -89,7 +89,7 @@ export const mockFestivals: Festival[] = [
     startDate: '2026-05-08',
     endDate: '2026-05-10',
     city: 'Marseille',
-    region: 'Provence-Alpes-Côte d\'Azur',
+    region: "Provence-Alpes-Côte d'Azur",
     location: {
       latitude: 43.2965,
       longitude: 5.3698,
@@ -117,7 +117,7 @@ export const mockFestivals: Festival[] = [
   {
     id: '8',
     name: 'Nantes Brasseurs Festival',
-    description: 'Rencontre des meilleurs brasseurs de l\'ouest de la France.',
+    description: "Rencontre des meilleurs brasseurs de l'ouest de la France.",
     startDate: '2026-02-20',
     endDate: '2026-02-23',
     city: 'Nantes',
@@ -149,11 +149,11 @@ export const mockFestivals: Festival[] = [
   {
     id: '10',
     name: 'Nice Mediterranean Beer Festival',
-    description: 'Festival de bière sur la Côte d\'Azur.',
+    description: "Festival de bière sur la Côte d'Azur.",
     startDate: '2026-06-18',
     endDate: '2026-06-21',
     city: 'Nice',
-    region: 'Provence-Alpes-Côte d\'Azur',
+    region: "Provence-Alpes-Côte d'Azur",
     location: {
       latitude: 43.7102,
       longitude: 7.262,
