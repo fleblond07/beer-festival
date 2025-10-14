@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useFestivals } from '@/composables/useFestivals'
 import { mockFestivals } from '@/mocks/festivals'
 import dayjs from 'dayjs'
-import { flushPromises } from '@vue/test-utils'
 
 describe('useFestivals', () => {
   beforeEach(() => {
@@ -65,7 +64,7 @@ describe('useFestivals', () => {
 
   describe('nextFestival', () => {
     it('should return the next upcoming festival', async () => {
-      const { festivals, nextFestival, fetchFestivals } = useFestivals()
+      const { nextFestival, fetchFestivals } = useFestivals()
       await fetchFestivals()
 
       const now = dayjs()
