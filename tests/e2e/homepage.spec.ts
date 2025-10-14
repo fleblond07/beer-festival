@@ -6,7 +6,7 @@ test.describe('Beer Festival Homepage', () => {
   })
 
   test('should load the homepage successfully', async ({ page }) => {
-    await expect(page).toHaveTitle(/Vite \+ Vue \+ TS/)
+    await expect(page).toHaveTitle(/beer-festival/)
   })
 
   test('should display the site header', async ({ page }) => {

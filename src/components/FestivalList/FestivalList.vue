@@ -18,8 +18,8 @@
             :key="festival.id"
             :festival="festival"
             :show-status="true"
-            @click="handleFestivalClick"
             :data-testid="`festival-card-${festival.id}`"
+            @click="handleFestivalClick"
           />
         </div>
       </div>
@@ -56,7 +56,7 @@ interface Props {
 defineProps<Props>()
 
 const emit = defineEmits<{
-  (e: 'festival-click', festival: Festival): void
+  (_e: 'festival-click', _festival: Festival): void
 }>()
 
 const handleFestivalClick = (festival: Festival) => {

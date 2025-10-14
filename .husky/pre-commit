@@ -1,0 +1,12 @@
+echo "Running pre-commit checks..."
+
+echo "\n🔍 Running ESLint on all files..."
+npx eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts || exit 1
+
+echo "\n💅 Checking formatting with Prettier..."
+npx prettier --check src/ || exit 1
+
+echo "\n🔎 Running type check..."
+npx vue-tsc -b --noEmit || exit 1
+
+echo "\n✅ All pre-commit checks passed!"

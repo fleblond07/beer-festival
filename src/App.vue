@@ -25,14 +25,14 @@
 
       <FestivalMap
         :festivals="sortedFestivals"
-        @marker-click="handleMarkerClick"
         data-testid="festival-map-section"
+        @marker-click="handleMarkerClick"
       />
 
       <FestivalList
         :festivals="sortedFestivals"
-        @festival-click="handleFestivalClick"
         data-testid="festival-list-section"
+        @festival-click="handleFestivalClick"
       />
     </main>
 

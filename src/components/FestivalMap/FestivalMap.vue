@@ -32,7 +32,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const emit = defineEmits<{
-  (e: 'marker-click', festival: Festival): void
+  (_e: 'marker-click', _festival: Festival): void
 }>()
 
 const mapContainer = ref<HTMLElement | null>(null)

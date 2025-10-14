@@ -61,12 +61,19 @@
               <span class="text-lg">{{ formattedDateRange }}</span>
             </div>
 
-            <p class="text-white/90 text-base mb-6 leading-relaxed" data-testid="festival-description">
+            <p
+              class="text-white/90 text-base mb-6 leading-relaxed"
+              data-testid="festival-description"
+            >
               {{ festival.description }}
             </p>
 
             <div class="flex items-center justify-between">
-              <div v-if="festival.breweryCount" class="flex items-center" data-testid="brewery-info">
+              <div
+                v-if="festival.breweryCount"
+                class="flex items-center"
+                data-testid="brewery-info"
+              >
                 <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10v6a1 1 0 001 1h12a1 1 0 001-1v-6a1 1 0 00-1-1H4a1 1 0 00-1 1z"
