@@ -171,6 +171,7 @@ func TestFestivalsHandler(t *testing.T) {
 
 	t.Run("uses custom allowed origins", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api/festivals", nil)
+		req.Header.Set("Origin", "http://localhost:5173")
 		w := httptest.NewRecorder()
 
 		handler := makeFestivalsHandler(mockFestivals, "http://localhost:5173")
@@ -181,4 +182,61 @@ func TestFestivalsHandler(t *testing.T) {
 			t.Errorf("Expected CORS origin http://localhost:5173, got %s", origin)
 		}
 	})
+
+	t.Run("blocks unlisted origins", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/api/festivals", nil)
+		req.Header.Set("Origin", "https://evil.com")
+		w := httptest.NewRecorder()
+
+		handler := makeFestivalsHandler(mockFestivals, "http://localhost:5173")
+		handler(w, req)
+
+		origin := w.Header().Get("Access-Control-Allow-Origin")
+		if origin == "https://evil.com" {
+			t.Error("Should not allow unlisted origin")
+		}
+	})
+
+	t.Run("supports multiple allowed origins", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/api/festivals", nil)
+		req.Header.Set("Origin", "http://localhost:3000")
+		w := httptest.NewRecorder()
+
+		handler := makeFestivalsHandler(mockFestivals, "http://localhost:5173,http://localhost:3000")
+		handler(w, req)
+
+		origin := w.Header().Get("Access-Control-Allow-Origin")
+		if origin != "http://localhost:3000" {
+			t.Errorf("Expected CORS origin http://localhost:3000, got %s", origin)
+		}
+	})
+}
+
+func TestHealthCheckHandler(t *testing.T) {
+	req := httptest.NewRequest("GET", "/health", nil)
+	w := httptest.NewRecorder()
+
+	healthCheckHandler(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status 200, got %d", w.Code)
+	}
+
+	contentType := w.Header().Get("Content-Type")
+	if contentType != "application/json" {
+		t.Errorf("Expected Content-Type application/json, got %s", contentType)
+	}
+
+	var response map[string]string
+	if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+		t.Fatalf("Failed to decode response: %v", err)
+	}
+
+	if response["status"] != "ok" {
+		t.Errorf("Expected status ok, got %s", response["status"])
+	}
+
+	if response["version"] == "" {
+		t.Error("Expected version to be set")
+	}
 }

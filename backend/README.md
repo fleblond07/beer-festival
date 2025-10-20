@@ -19,9 +19,13 @@ The server will start on `http://localhost:8080`
 
 ## API Endpoints
 
-### GET /api/festivals
+### GET /api/v1/festivals
 
 Returns a JSON array of all festivals.
+
+### GET /health
+
+Health check endpoint that returns the service status and version.
 
 **Response:**
 ```json

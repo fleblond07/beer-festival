@@ -2,7 +2,7 @@ import { ref, computed } from 'vue'
 import type { Festival } from '@/types'
 import dayjs from 'dayjs'
 
-const API_URL = `${import.meta.env.VITE_API_URL}/api/festivals`
+const API_FESTIVAL_URL_PATH = `${import.meta.env.VITE_API_URL}/api/festivals`
 
 export function useFestivals() {
   const festivals = ref<Festival[]>([])
@@ -13,7 +13,7 @@ export function useFestivals() {
     loading.value = true
     error.value = null
     try {
-      const response = await fetch(API_URL)
+      const response = await fetch(API_FESTIVAL_URL_PATH)
       if (!response.ok) {
         throw new Error('Failed to fetch festivals')
       }
@@ -21,7 +21,6 @@ export function useFestivals() {
       festivals.value = data
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'An error occurred'
-      console.error('Error fetching festivals:', err)
     } finally {
       loading.value = false
     }

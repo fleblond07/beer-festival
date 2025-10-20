@@ -6,7 +6,7 @@ import dayjs from 'dayjs'
 describe('useFestivals', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Mock fetch API
+
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
