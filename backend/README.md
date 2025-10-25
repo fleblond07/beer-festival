@@ -12,7 +12,7 @@ Simple Go backend that serves festival data via a REST API.
 
 ```bash
 cd backend
-go run main.go
+go run .
 ```
 
 The server will start on `http://localhost:8080`

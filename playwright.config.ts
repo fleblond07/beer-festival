@@ -19,7 +19,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'cd backend && go run main.go',
+      command: 'cd backend && go run .',
       url: 'http://localhost:8080/api/festivals',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
