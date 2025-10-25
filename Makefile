@@ -20,7 +20,7 @@ install: ## Install dependencies for frontend and backend
 
 backend: ## Start the backend server
 	@echo "$(BLUE)Starting backend server...$(RESET)"
-	cd backend && go run main.go
+	cd backend && go run .
 
 frontend: ## Start the frontend development server
 	@echo "$(BLUE)Starting frontend development server...$(RESET)"

@@ -18,7 +18,7 @@ const (
 
 	APIBasePath   = "/api/v1"
 	HealthPath    = "/health"
-	FestivalsPath = "/api/v1/festivals"
+	FestivalsPath = "/api/festivals"
 
 	AppVersion = "1.0.0"
 )
