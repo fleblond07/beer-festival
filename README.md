@@ -13,6 +13,7 @@ Feel free to run a copy of this website, below instruction on features and how t
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 - **Clean Architecture**: Component-based structure with TypeScript
 - **Full Test Coverage**: ~95% test coverage with unit and E2E tests
+- **Go Backend API**: RESTful API serving festival data with CORS support
 - **Mock Data**: Pre-populated with example French beer festivals
 
 ## 🚀 Quick Start
@@ -21,22 +22,25 @@ Feel free to run a copy of this website, below instruction on features and how t
 
 - Node.js 22.x or higher
 - npm 10.x or higher
+- Go 1.x or higher (for backend)
 
 ### Installation
 
 ```bash
-# Install dependencies
-npm install
+# Install frontend dependencies
+make install
 ```
 
 ### Development
 
 ```bash
-# Start development server
-npm run dev
-```
+# Start both backend and frontend concurrently
+make dev
 
-The application will be available at `http://localhost:5173`
+# Or start them separately:
+make backend  # Starts backend on http://localhost:8080
+make frontend # Starts frontend on http://localhost:5173
+```
 
 ### Build for Production
 
@@ -50,37 +54,47 @@ npm run preview
 
 ## 🧪 Testing
 
-### Unit Tests
-
 ```bash
-# Run unit tests
-npm run test
+# Run all tests (backend + frontend)
+make test
 
-# Run tests with UI
-npm run test:ui
+# Run backend tests only
+make test-backend
 
-# Run tests with coverage
-npm run test:coverage
+# Run frontend unit tests only
+make test-frontend
+
+# Run E2E tests
+make test-e2e
 ```
 
-### E2E Tests
+## 🔌 Backend API
 
-```bash
-# Run end-to-end tests
-npm run test:e2e
+The Go backend provides a RESTful API for festival data:
 
-# Run E2E tests with UI
-npm run test:e2e:ui
-```
+### Endpoints
+
+- `GET /api/v1/festivals` - Returns all festivals
+- `GET /health` - Health check endpoint
+
+### Configuration
+
+The backend supports the following environment variables:
+
+- `PORT` - Server port (default: `8080`)
+- `FESTIVALS_FILE` - Path to festivals JSON file (default: `./festivals.json`)
+- `ALLOWED_ORIGINS` - CORS allowed origins (default: `*`)
+
+See [backend/README.md](backend/README.md) for more details.
 
 ## 🚧 Future Enhancements
 
-- [ ] Backend API integration
 - [ ] Festival detail pages
 - [ ] Filter and search functionality
 - [ ] Event calendar integration
 - [ ] Social sharing features
 - [ ] Multi-language support
+- [ ] Database integration for persistent storage
 
 ## 🤝 Contributing
 
@@ -100,7 +114,3 @@ This project is a demonstration application. Feel free to use it as a template f
 - Map tiles from OpenStreetMap
 - Icons from Heroicons
 - Built with ❤️ for craft beer enthusiasts
-
----
-
-**Note**: This is a demo application using mock data. For production use, integrate with a real backend API.
