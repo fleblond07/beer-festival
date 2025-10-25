@@ -1,12 +1,30 @@
 import { ref, computed } from 'vue'
 import type { Festival } from '@/types'
-import { mockFestivals } from '@/mocks/festivals'
 import dayjs from 'dayjs'
 
+const API_FESTIVAL_URL_PATH = `${import.meta.env.VITE_API_URL}/api/festivals`
+
 export function useFestivals() {
-  const festivals = ref<Festival[]>(mockFestivals)
+  const festivals = ref<Festival[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  const fetchFestivals = async () => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await fetch(API_FESTIVAL_URL_PATH)
+      if (!response.ok) {
+        throw new Error('Failed to fetch festivals')
+      }
+      const data = await response.json()
+      festivals.value = data
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An error occurred'
+    } finally {
+      loading.value = false
+    }
+  }
 
   const nextFestival = computed(() => {
     const now = dayjs()
@@ -46,6 +64,7 @@ export function useFestivals() {
     festivals,
     loading,
     error,
+    fetchFestivals,
     nextFestival,
     sortedFestivals,
     getFestivalsByRegion,

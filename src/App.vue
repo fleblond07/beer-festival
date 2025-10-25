@@ -41,22 +41,24 @@
         <p class="text-gray-300" data-testid="footer-text">
           © 2025 Festivals de Bière. Fait avec ❤️ pour les amateurs de bière artisanale.
         </p>
-        <p class="text-gray-400 text-sm mt-2" data-testid="footer-note">
-          Les données sont fictives et à titre d'exemple uniquement.
-        </p>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { NextFestival } from '@/components/NextFestival'
 import { FestivalMap } from '@/components/FestivalMap'
 import { FestivalList } from '@/components/FestivalList'
 import { useFestivals } from '@/composables/useFestivals'
 import type { Festival } from '@/types'
 
-const { nextFestival, sortedFestivals } = useFestivals()
+const { nextFestival, sortedFestivals, fetchFestivals } = useFestivals()
+
+onMounted(() => {
+  fetchFestivals()
+})
 
 const handleMarkerClick = (festival: Festival) => {
   console.log('Marker clicked:', festival.name)

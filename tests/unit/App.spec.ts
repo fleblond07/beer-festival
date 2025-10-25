@@ -68,13 +68,6 @@ describe('Default App testing', () => {
       const wrapper = mount(App)
       expect(wrapper.find('[data-testid="footer-text"]').exists()).toBe(true)
     })
-
-    it('should render footer note', () => {
-      const wrapper = mount(App)
-      const footerNote = wrapper.find('[data-testid="footer-note"]')
-      expect(footerNote.exists()).toBe(true)
-      expect(footerNote.text()).toContain('Les données sont fictives')
-    })
   })
 
   describe('components', () => {

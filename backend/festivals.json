@@ -1,0 +1,162 @@
+[
+  {
+    "id": "1",
+    "name": "Paris Beer Week",
+    "description": "La plus grande célébration de la bière artisanale à Paris avec plus de 100 brasseries.",
+    "startDate": "2026-11-15",
+    "endDate": "2026-11-22",
+    "city": "Paris",
+    "region": "Île-de-France",
+    "location": {
+      "latitude": 48.8566,
+      "longitude": 2.3522
+    },
+    "image": "https://images.unsplash.com/photo-1532634733-cae1395e440f?w=400&h=300&fit=crop",
+    "website": "https://parisbeerweek.com",
+    "breweryCount": 120
+  },
+  {
+    "id": "2",
+    "name": "Festival de la Bière de Strasbourg",
+    "description": "Le festival emblématique de bière alsacienne et européenne.",
+    "startDate": "2026-10-20",
+    "endDate": "2026-10-25",
+    "city": "Strasbourg",
+    "region": "Grand Est",
+    "location": {
+      "latitude": 48.5734,
+      "longitude": 7.7521
+    },
+    "image": "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=400&h=300&fit=crop",
+    "website": "https://strasbourg-beer-fest.fr",
+    "breweryCount": 85
+  },
+  {
+    "id": "3",
+    "name": "Lyon Beer Festival",
+    "description": "Festival innovant mettant en avant les brasseries artisanales françaises.",
+    "startDate": "2026-12-05",
+    "endDate": "2026-12-08",
+    "city": "Lyon",
+    "region": "Auvergne-Rhône-Alpes",
+    "location": {
+      "latitude": 45.764,
+      "longitude": 4.8357
+    },
+    "image": "https://images.unsplash.com/photo-1612528443702-f6741f70a049?w=400&h=300&fit=crop",
+    "website": "https://lyonbeerfestival.fr",
+    "breweryCount": 65
+  },
+  {
+    "id": "4",
+    "name": "Bordeaux Craft Beer Fest",
+    "description": "Dégustation de bières artisanales dans la capitale du vin.",
+    "startDate": "2027-03-12",
+    "endDate": "2027-03-15",
+    "city": "Bordeaux",
+    "region": "Nouvelle-Aquitaine",
+    "location": {
+      "latitude": 44.8378,
+      "longitude": -0.5792
+    },
+    "image": "https://images.unsplash.com/photo-1618183479302-1e0aa382c36b?w=400&h=300&fit=crop",
+    "website": "https://bordeauxcraftbeerfest.com",
+    "breweryCount": 50
+  },
+  {
+    "id": "5",
+    "name": "Lille Bière Festival",
+    "description": "Le festival du nord de la France célébrant les bières belges et françaises.",
+    "startDate": "2027-01-18",
+    "endDate": "2027-01-20",
+    "city": "Lille",
+    "region": "Hauts-de-France",
+    "location": {
+      "latitude": 50.6292,
+      "longitude": 3.0573
+    },
+    "image": "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=400&h=300&fit=crop",
+    "website": "https://lillebierefestival.fr",
+    "breweryCount": 70
+  },
+  {
+    "id": "6",
+    "name": "Marseille Beer & Sea",
+    "description": "Festival de bière avec vue sur la Méditerranée.",
+    "startDate": "2027-05-08",
+    "endDate": "2027-05-10",
+    "city": "Marseille",
+    "region": "Provence-Alpes-Côte d'Azur",
+    "location": {
+      "latitude": 43.2965,
+      "longitude": 5.3698
+    },
+    "image": "https://images.unsplash.com/photo-1597822738124-151cb4d74d7e?w=400&h=300&fit=crop",
+    "website": "https://marseille-beer-sea.fr",
+    "breweryCount": 45
+  },
+  {
+    "id": "7",
+    "name": "Toulouse Hop Festival",
+    "description": "Célébration du houblon et des IPA dans la ville rose.",
+    "startDate": "2027-04-02",
+    "endDate": "2027-04-05",
+    "city": "Toulouse",
+    "region": "Occitanie",
+    "location": {
+      "latitude": 43.6047,
+      "longitude": 1.4442
+    },
+    "image": "https://images.unsplash.com/photo-1562095241-8c6714fd4178?w=400&h=300&fit=crop",
+    "website": "https://toulousehopfestival.com",
+    "breweryCount": 55
+  },
+  {
+    "id": "8",
+    "name": "Nantes Brasseurs Festival",
+    "description": "Rencontre des meilleurs brasseurs de l'ouest de la France.",
+    "startDate": "2027-02-20",
+    "endDate": "2027-02-23",
+    "city": "Nantes",
+    "region": "Pays de la Loire",
+    "location": {
+      "latitude": 47.2184,
+      "longitude": -1.5536
+    },
+    "image": "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=400&h=300&fit=crop",
+    "website": "https://nantesbrasseursfestival.fr",
+    "breweryCount": 60
+  },
+  {
+    "id": "9",
+    "name": "Rennes Beer Week",
+    "description": "Une semaine dédiée à la découverte des bières bretonnes et internationales.",
+    "startDate": "2026-10-08",
+    "endDate": "2026-10-14",
+    "city": "Rennes",
+    "region": "Bretagne",
+    "location": {
+      "latitude": 48.1173,
+      "longitude": -1.6778
+    },
+    "image": "https://images.unsplash.com/photo-1558642891-54be180ea339?w=400&h=300&fit=crop",
+    "website": "https://rennesbeerweek.com",
+    "breweryCount": 75
+  },
+  {
+    "id": "10",
+    "name": "Nice Mediterranean Beer Festival",
+    "description": "Festival de bière sur la Côte d'Azur.",
+    "startDate": "2027-06-18",
+    "endDate": "2027-06-21",
+    "city": "Nice",
+    "region": "Provence-Alpes-Côte d'Azur",
+    "location": {
+      "latitude": 43.7102,
+      "longitude": 7.262
+    },
+    "image": "https://images.unsplash.com/photo-1546156929-a4c0ac411f47?w=400&h=300&fit=crop",
+    "website": "https://nice-beer-festival.fr",
+    "breweryCount": 40
+  }
+]

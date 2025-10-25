@@ -20,6 +20,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache-dependency-path: backend/go.sum
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
@@ -28,6 +34,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run backend tests
+        run: cd backend && go test -v ./...
 
       - name: Run ESLint
         run: npx eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts
@@ -48,10 +57,12 @@ jobs:
         run: npm run build
 
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install --with-deps firefox
 
       - name: Run E2E tests
         run: npm run test:e2e
+        env:
+          VITE_API_URL: http://localhost:8080
 
       - name: Upload test coverage
         uses: codecov/codecov-action@v4
