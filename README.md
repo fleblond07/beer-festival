@@ -2,6 +2,23 @@
 
 Beers, for everyone. That's the idea behind the website, register and share every beer festival or any type of event beer-related in France.
 
+## 📁 Project Structure
+
+This is a monorepo with separate frontend and backend directories:
+
+```
+beer-festival/
+├── frontend/          # Vue.js frontend application
+│   ├── src/          # Frontend source code
+│   ├── tests/        # Frontend tests
+│   └── Dockerfile    # Frontend container configuration
+├── backend/          # Go backend API
+│   ├── main.go       # Backend entry point
+│   ├── handlers.go   # API handlers
+│   └── Dockerfile    # Backend container configuration
+└── Makefile          # Build and development commands
+```
+
 # Technical details:
 Feel free to run a copy of this website, below instruction on features and how to run it!
 
@@ -46,10 +63,31 @@ make frontend # Starts frontend on http://localhost:5173
 
 ```bash
 # Build the application
-npm run build
+make build
+
+# Or build directly
+cd frontend && npm run build
 
 # Preview the production build
-npm run preview
+cd frontend && npm run preview
+```
+
+### Docker
+
+Each service has its own Dockerfile for containerized deployment:
+
+```bash
+# Build frontend Docker image
+cd frontend && docker build -t beer-festival-frontend .
+
+# Build backend Docker image
+cd backend && docker build -t beer-festival-backend .
+
+# Run frontend container
+docker run -p 80:80 beer-festival-frontend
+
+# Run backend container
+docker run -p 8080:8080 beer-festival-backend
 ```
 
 ## 🧪 Testing
