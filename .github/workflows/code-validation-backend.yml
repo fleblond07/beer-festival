@@ -1,0 +1,29 @@
+name: Backend Code Validation
+
+on:
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "backend/**"
+      - ".github/workflows/code-validation-backend.yml"
+
+jobs:
+  backend-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+          cache-dependency-path: backend/go.sum
+
+      - name: Run backend tests
+        run: cd backend && go test -v ./...
+
+      - name: Run Go vet
+        run: cd backend && go vet ./...

@@ -1,0 +1,37 @@
+name: e2e Testing
+
+on:
+  pull_request:
+    branches:
+      - "**"
+    paths:
+      - "frontend/**"
+      - ".github/workflows/code-validation-frontend.yml"
+
+jobs:
+  frontend-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Build project
+        run: cd frontend && npm run build
+
+      - name: Install Playwright Browsers
+        run: cd frontend && npx playwright install --with-deps firefox
+
+      - name: Run E2E tests
+        run: cd frontend && npm run test:e2e
+        env:
+          VITE_API_URL: http://localhost:8080
