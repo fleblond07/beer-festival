@@ -14,12 +14,12 @@ FROM alpine:latest
 
 WORKDIR /app
 
+ENV PORT=1337
+
 COPY --from=build /app/beer-festival-backend .
 
 COPY --from=build /app/festivals.json .
 
-EXPOSE 8080
-
-ENV PORT=8080
+EXPOSE 1337
 
 CMD ["./beer-festival-backend"]

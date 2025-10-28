@@ -6,6 +6,8 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
+COPY .env.prod .env
+
 COPY . .
 
 RUN npm run build
@@ -18,6 +20,6 @@ RUN npm install -g serve
 
 COPY --from=build /app/dist ./dist
 
-EXPOSE 3000
+EXPOSE 1338
 
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["serve", "-s", "dist", "-l", "1338"]
