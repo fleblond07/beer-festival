@@ -1,12 +1,6 @@
 name: Frontend Code Validation
 
 on:
-  push:
-    branches:
-      - "**"
-    paths:
-      - "frontend/**"
-      - ".github/workflows/code-validation-frontend.yml"
   pull_request:
     branches:
       - "**"
