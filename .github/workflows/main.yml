@@ -1,0 +1,12 @@
+name: Main Branch Validation & Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  code-validation:
+    uses: ./.github/workflows/code-validation-frontend.yml
+  deploy:
+    uses: /.github/workflows/deploy.yml
