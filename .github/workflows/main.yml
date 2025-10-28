@@ -11,3 +11,4 @@ jobs:
   deploy:
     needs: code-validation
     uses: ./.github/workflows/deploy.yml
+    secrets: inherit
