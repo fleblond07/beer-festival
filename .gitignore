@@ -11,3 +11,4 @@ backend/bin
 
 # Environment files
 .env
+.vscode

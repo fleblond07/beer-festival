@@ -2,23 +2,6 @@
 
 Beers, for everyone. That's the idea behind the website, register and share every beer festival or any type of event beer-related in France.
 
-## 📁 Project Structure
-
-This is a monorepo with separate frontend and backend directories:
-
-```
-beer-festival/
-├── frontend/          # Vue.js frontend application
-│   ├── src/          # Frontend source code
-│   ├── tests/        # Frontend tests
-│   └── Dockerfile    # Frontend container configuration
-├── backend/          # Go backend API
-│   ├── main.go       # Backend entry point
-│   ├── handlers.go   # API handlers
-│   └── Dockerfile    # Backend container configuration
-└── Makefile          # Build and development commands
-```
-
 # Technical details:
 Feel free to run a copy of this website, below instruction on features and how to run it!
 
@@ -44,12 +27,8 @@ Feel free to run a copy of this website, below instruction on features and how t
 ### Installation
 
 ```bash
-# Install frontend dependencies
 make install
 ```
-
-### Development
-
 ```bash
 # Start both backend and frontend concurrently
 make dev
@@ -62,48 +41,56 @@ make frontend # Starts frontend on http://localhost:5173
 ### Build for Production
 
 ```bash
-# Build the application
 make build
-
-# Or build directly
-cd frontend && npm run build
-
-# Preview the production build
-cd frontend && npm run preview
 ```
 
 ### Docker
 
-Each service has its own Dockerfile for containerized deployment:
+
+#### Using Docker Compose
 
 ```bash
-# Build frontend Docker image
-cd frontend && docker build -t beer-festival-frontend .
+docker-compose up --build
 
-# Build backend Docker image
-cd backend && docker build -t beer-festival-backend .
+docker-compose down
+```
 
-# Run frontend container
-docker run -p 80:80 beer-festival-frontend
+This starts:
+- **Backend** on http://localhost:8080
+- **Frontend** on http://localhost:3000
 
-# Run backend container
-docker run -p 8080:8080 beer-festival-backend
+
+#### Building Individual Containers for Deployment
+
+```bash
+docker build -t beer-festival-backend ./backend
+docker build -t beer-festival-frontend ./frontend
+
+docker run -d -p 8080:8080 --name backend beer-festival-backend
+docker run -d -p 3000:3000 --name frontend beer-festival-frontend
 ```
 
 ## 🧪 Testing
 
 ```bash
-# Run all tests (backend + frontend)
 make test
+```
 
-# Run backend tests only
-make test-backend
+## 📁 Project Structure
 
-# Run frontend unit tests only
-make test-frontend
+This is a monorepo with separate frontend and backend directories:
 
-# Run E2E tests
-make test-e2e
+```
+beer-festival/
+├── frontend/          # Vue.js frontend application
+│   ├── src/          # Frontend source code
+│   ├── tests/        # Frontend tests
+│   └── Dockerfile    # Frontend container configuration
+├── backend/          # Go backend API
+│   ├── main.go       # Backend entry point
+│   ├── handlers.go   # API handlers
+│   └── Dockerfile    # Backend container configuration
+└── Makefile          # Build and development commands
 ```
 
 ## 🔌 Backend API
@@ -121,9 +108,6 @@ The backend supports the following environment variables:
 
 - `PORT` - Server port (default: `8080`)
 - `FESTIVALS_FILE` - Path to festivals JSON file (default: `./festivals.json`)
-- `ALLOWED_ORIGINS` - CORS allowed origins (default: `*`)
-
-See [backend/README.md](backend/README.md) for more details.
 
 ## 🚧 Future Enhancements
 

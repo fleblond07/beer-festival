@@ -10,11 +10,14 @@ COPY . .
 
 RUN npm run build
 
-FROM nginx:alpine
+FROM node:20-alpine
 
-COPY --from=build /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-EXPOSE 80
+RUN npm install -g serve
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /app/dist ./dist
+
+EXPOSE 3000
+
+CMD ["serve", "-s", "dist", "-l", "3000"]

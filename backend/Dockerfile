@@ -20,4 +20,6 @@ COPY --from=build /app/festivals.json .
 
 EXPOSE 8080
 
+ENV PORT=8080
+
 CMD ["./beer-festival-backend"]
