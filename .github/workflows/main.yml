@@ -9,4 +9,5 @@ jobs:
   code-validation:
     uses: ./.github/workflows/code-validation-frontend.yml
   deploy:
+    needs: code-validation
     uses: ./.github/workflows/deploy.yml
