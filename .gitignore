@@ -1,7 +1,14 @@
-node_modules
-dist
-.vscode/*
-coverage/*
-test-results
+# Frontend
+frontend/node_modules
+frontend/dist
+frontend/coverage
+frontend/test-results
+frontend/playwright-report
+
+# Backend
+backend/beer-festival-backend
+backend/bin
+
+# Environment files
 .env
-playwright-report/*
+.vscode
