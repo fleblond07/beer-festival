@@ -4,12 +4,11 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-
-COPY .env.prod ./.env
-
 RUN npm ci
 
 COPY . .
+
+COPY .env.prod ./.env
 
 RUN npm run build
 
