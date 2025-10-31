@@ -35,3 +35,5 @@ jobs:
         run: cd frontend && npm run test:e2e
         env:
           VITE_API_URL: http://localhost:8080
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}

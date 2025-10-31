@@ -23,6 +23,12 @@ export default defineConfig({
       url: 'http://localhost:8080/api/festivals',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
+      env: {
+        PORT: '8080',
+        ALLOWED_ORIGINS: '*',
+        SUPABASE_URL: process.env.SUPABASE_URL || '',
+        SUPABASE_KEY: process.env.SUPABASE_KEY || '',
+      },
     },
     {
       command: 'npm run dev',
