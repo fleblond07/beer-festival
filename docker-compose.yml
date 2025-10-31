@@ -11,6 +11,8 @@ services:
     environment:
       - PORT=1337
       - ALLOWED_ORIGINS=*
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_KEY=${SUPABASE_KEY}
     healthcheck:
       test:
         [

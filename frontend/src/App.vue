@@ -21,7 +21,11 @@
     </header>
 
     <main>
-      <NextFestival :festival="nextFestival" data-testid="next-festival-section" />
+      <NextFestival
+        :festival="nextFestival"
+        :loading="loading"
+        data-testid="next-festival-section"
+      />
 
       <FestivalMap
         :festivals="sortedFestivals"
@@ -31,6 +35,7 @@
 
       <FestivalList
         :festivals="sortedFestivals"
+        :loading="loading"
         data-testid="festival-list-section"
         @festival-click="handleFestivalClick"
       />
@@ -54,7 +59,7 @@ import { FestivalList } from '@/components/FestivalList'
 import { useFestivals } from '@/composables/useFestivals'
 import type { Festival } from '@/types'
 
-const { nextFestival, sortedFestivals, fetchFestivals } = useFestivals()
+const { nextFestival, sortedFestivals, loading, fetchFestivals } = useFestivals()
 
 onMounted(() => {
   fetchFestivals()

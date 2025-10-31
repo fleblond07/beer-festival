@@ -28,7 +28,7 @@ describe('FestivalList', () => {
     it('should render the section title', () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       expect(wrapper.find('[data-testid="section-title"]').text()).toBe('Tous les Festivals')
@@ -37,7 +37,7 @@ describe('FestivalList', () => {
     it('should render the section subtitle', () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       expect(wrapper.find('[data-testid="section-subtitle"]').text()).toBe(
@@ -48,7 +48,7 @@ describe('FestivalList', () => {
     it('should render the container', () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       expect(wrapper.find('[data-testid="festival-list-container"]').exists()).toBe(true)
@@ -59,7 +59,7 @@ describe('FestivalList', () => {
     it('should render the festivals grid', () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       expect(wrapper.find('[data-testid="festivals-grid"]').exists()).toBe(true)
@@ -68,7 +68,7 @@ describe('FestivalList', () => {
     it('should render one festival card', () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const cards = wrapper.findAllComponents(FestivalCard)
@@ -78,7 +78,7 @@ describe('FestivalList', () => {
     it('should render multiple festival cards', () => {
       const festivals = [createMockFestival('1'), createMockFestival('2'), createMockFestival('3')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const cards = wrapper.findAllComponents(FestivalCard)
@@ -88,7 +88,7 @@ describe('FestivalList', () => {
     it('should render correct number of festival cards', () => {
       const festivals = Array.from({ length: 10 }, (_, i) => createMockFestival(String(i + 1)))
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const cards = wrapper.findAllComponents(FestivalCard)
@@ -98,7 +98,7 @@ describe('FestivalList', () => {
     it('should pass festival data to each card', () => {
       const festivals = [createMockFestival('1', { name: 'Unique Festival Name' })]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const card = wrapper.findComponent(FestivalCard)
@@ -108,7 +108,7 @@ describe('FestivalList', () => {
     it('should pass showStatus prop to festival cards', () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const card = wrapper.findComponent(FestivalCard)
@@ -118,7 +118,7 @@ describe('FestivalList', () => {
     it('should not render empty state when festivals exist', () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(false)
@@ -127,7 +127,7 @@ describe('FestivalList', () => {
     it('should render festivals with unique keys', () => {
       const festivals = [createMockFestival('1'), createMockFestival('2'), createMockFestival('3')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const cards = wrapper.findAllComponents(FestivalCard)
@@ -139,7 +139,7 @@ describe('FestivalList', () => {
   describe('without festivals', () => {
     it('should render empty state when no festivals', () => {
       const wrapper = mount(FestivalList, {
-        props: { festivals: [] },
+        props: { festivals: [], loading: false },
       })
 
       expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(true)
@@ -147,7 +147,7 @@ describe('FestivalList', () => {
 
     it('should not render festivals grid when no festivals', () => {
       const wrapper = mount(FestivalList, {
-        props: { festivals: [] },
+        props: { festivals: [], loading: false },
       })
 
       expect(wrapper.find('[data-testid="festivals-grid"]').exists()).toBe(false)
@@ -155,7 +155,7 @@ describe('FestivalList', () => {
 
     it('should render empty state message', () => {
       const wrapper = mount(FestivalList, {
-        props: { festivals: [] },
+        props: { festivals: [], loading: false },
       })
 
       const emptyState = wrapper.find('[data-testid="empty-state"]')
@@ -165,7 +165,7 @@ describe('FestivalList', () => {
 
     it('should not render any festival cards when empty', () => {
       const wrapper = mount(FestivalList, {
-        props: { festivals: [] },
+        props: { festivals: [], loading: false },
       })
 
       const cards = wrapper.findAllComponents(FestivalCard)
@@ -173,11 +173,39 @@ describe('FestivalList', () => {
     })
   })
 
+  describe('loading state', () => {
+    it('should render loading state when loading is true', () => {
+      const wrapper = mount(FestivalList, {
+        props: { festivals: [], loading: true },
+      })
+
+      const loadingState = wrapper.find('[data-testid="loading-state"]')
+      expect(loadingState.exists()).toBe(true)
+      expect(loadingState.text()).toContain('Chargement...')
+    })
+
+    it('should not render festivals grid when loading', () => {
+      const wrapper = mount(FestivalList, {
+        props: { festivals: [], loading: true },
+      })
+
+      expect(wrapper.find('[data-testid="festivals-grid"]').exists()).toBe(false)
+    })
+
+    it('should not render empty state when loading', () => {
+      const wrapper = mount(FestivalList, {
+        props: { festivals: [], loading: true },
+      })
+
+      expect(wrapper.find('[data-testid="empty-state"]').exists()).toBe(false)
+    })
+  })
+
   describe('interactions', () => {
     it('should emit festival-click event when card is clicked', async () => {
       const festivals = [createMockFestival('1')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const card = wrapper.findComponent(FestivalCard)
@@ -190,7 +218,7 @@ describe('FestivalList', () => {
     it('should emit festival-click event for correct festival', async () => {
       const festivals = [createMockFestival('1'), createMockFestival('2'), createMockFestival('3')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const cards = wrapper.findAllComponents(FestivalCard)
@@ -202,7 +230,7 @@ describe('FestivalList', () => {
     it('should handle multiple festival clicks', async () => {
       const festivals = [createMockFestival('1'), createMockFestival('2')]
       const wrapper = mount(FestivalList, {
-        props: { festivals },
+        props: { festivals, loading: false },
       })
 
       const cards = wrapper.findAllComponents(FestivalCard)

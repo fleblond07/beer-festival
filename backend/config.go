@@ -4,23 +4,14 @@ import "os"
 
 func getConfig() Config {
 	port := os.Getenv("PORT")
-	if port == "" {
-		port = DefaultPort
-	}
-
-	festivalsFile := os.Getenv("FESTIVALS_FILE")
-	if festivalsFile == "" {
-		festivalsFile = DefaultFestivalsFile
-	}
-
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
-	if allowedOrigins == "" {
-		allowedOrigins = DefaultAllowedOrigins
-	}
+	supabaseURL := os.Getenv("SUPABASE_URL")
+	supabaseKey := os.Getenv("SUPABASE_KEY")
 
 	return Config{
 		Port:           port,
-		FestivalsFile:  festivalsFile,
 		AllowedOrigins: allowedOrigins,
+		SupabaseURL:    supabaseURL,
+		SupabaseKey:    supabaseKey,
 	}
 }

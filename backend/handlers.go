@@ -52,3 +52,28 @@ func makeFestivalsHandler(festivals []Festival, allowedOrigins string) http.Hand
 		}
 	}
 }
+
+func makeFestivalsHandlerWithDB(db *Database, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		festivals, err := db.GetFestivals()
+		if err != nil {
+			log.Printf("Error fetching festivals from database: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		if err := json.NewEncoder(w).Encode(festivals); err != nil {
+			log.Printf("Error encoding festivals: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+	}
+}

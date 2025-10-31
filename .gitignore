@@ -8,7 +8,7 @@ frontend/playwright-report
 # Backend
 backend/beer-festival-backend
 backend/bin
-
+coverage.out
 # Environment files
 .env
 .vscode
