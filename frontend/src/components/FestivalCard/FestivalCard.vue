@@ -48,9 +48,7 @@
             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
           />
         </svg>
-        <span class="text-sm" data-testid="festival-location"
-          >{{ festival.city }}</span
-        >
+        <span class="text-sm" data-testid="festival-location">{{ festival.city }}</span>
       </div>
 
       <div class="flex items-center text-gray-300 mb-3">
