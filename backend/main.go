@@ -13,16 +13,16 @@ import (
 func main() {
 	config := getConfig()
 
-	festivals, err := loadFestivals(config.FestivalsFile)
+	db, err := NewDatabase(config.SupabaseURL, config.SupabaseKey)
 	if err != nil {
-		log.Fatalf("Failed to load festivals: %v", err)
+		log.Fatalf("Failed to initialize database: %v", err)
 	}
 
-	log.Printf("Loaded %d festivals from %s", len(festivals), config.FestivalsFile)
+	log.Println("Successfully connected to Supabase")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc(HealthPath, healthCheckHandler)
-	mux.HandleFunc(FestivalsPath, makeFestivalsHandler(festivals, config.AllowedOrigins))
+	mux.HandleFunc(FestivalsPath, makeFestivalsHandlerWithDB(db, config.AllowedOrigins))
 
 	handler := chainMiddleware(mux, requestIDMiddleware, metricsMiddleware, gzipMiddleware)
 

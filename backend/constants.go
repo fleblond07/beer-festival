@@ -1,15 +1,13 @@
 package main
 
 const (
-	DefaultPort           = "8080"
-	DefaultFestivalsFile  = "./festivals.json"
+	HeaderContentType     = "Content-Type"
+	HeaderCORSOrigin      = "Access-Control-Allow-Origin"
+	HeaderCORSMethods     = "Access-Control-Allow-Methods"
+	HeaderCORSHeaders     = "Access-Control-Allow-Headers"
+	HeaderOrigin          = "Origin"
+	DefaultTimeFormat     = "2006-01-02"
 	DefaultAllowedOrigins = "*"
-
-	HeaderContentType = "Content-Type"
-	HeaderCORSOrigin  = "Access-Control-Allow-Origin"
-	HeaderCORSMethods = "Access-Control-Allow-Methods"
-	HeaderCORSHeaders = "Access-Control-Allow-Headers"
-	HeaderOrigin      = "Origin"
 
 	ContentTypeJSON = "application/json"
 

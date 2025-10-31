@@ -27,7 +27,7 @@ describe('NextFestival', () => {
     it('should render the section title', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="section-title"]').text()).toBe('Prochain Festival')
@@ -36,7 +36,7 @@ describe('NextFestival', () => {
     it('should render the section subtitle', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="section-subtitle"]').text()).toBe(
@@ -47,7 +47,7 @@ describe('NextFestival', () => {
     it('should render the festival name', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="festival-name"]').text()).toBe(festival.name)
@@ -56,7 +56,7 @@ describe('NextFestival', () => {
     it('should render the festival location', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       const location = wrapper.find('[data-testid="festival-location"]').text()
@@ -67,7 +67,7 @@ describe('NextFestival', () => {
     it('should render the festival dates', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       const dates = wrapper.find('[data-testid="festival-dates"]')
@@ -78,7 +78,7 @@ describe('NextFestival', () => {
     it('should render the festival description', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="festival-description"]').text()).toBe(festival.description)
@@ -87,7 +87,7 @@ describe('NextFestival', () => {
     it('should render the countdown badge', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       const countdown = wrapper.find('[data-testid="countdown-badge"]')
@@ -98,7 +98,7 @@ describe('NextFestival', () => {
     it('should render the festival image when provided', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       const image = wrapper.find('[data-testid="hero-image"]')
@@ -110,7 +110,7 @@ describe('NextFestival', () => {
     it('should not render the image container when image is not provided', () => {
       const festival = createMockFestival({ image: undefined })
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="hero-image-container"]').exists()).toBe(false)
@@ -119,7 +119,7 @@ describe('NextFestival', () => {
     it('should render brewery information when provided', () => {
       const festival = createMockFestival({ breweryCount: 75 })
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       const breweryInfo = wrapper.find('[data-testid="brewery-info"]')
@@ -131,7 +131,7 @@ describe('NextFestival', () => {
     it('should not render brewery information when not provided', () => {
       const festival = createMockFestival({ breweryCount: undefined })
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="brewery-info"]').exists()).toBe(false)
@@ -140,7 +140,7 @@ describe('NextFestival', () => {
     it('should render website link when provided', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       const link = wrapper.find('[data-testid="website-link"]')
@@ -153,7 +153,7 @@ describe('NextFestival', () => {
     it('should not render website link when not provided', () => {
       const festival = createMockFestival({ website: undefined })
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="website-link"]').exists()).toBe(false)
@@ -162,7 +162,7 @@ describe('NextFestival', () => {
     it('should render the hero card', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="hero-card"]').exists()).toBe(true)
@@ -171,7 +171,7 @@ describe('NextFestival', () => {
     it('should not render no-festival message when festival exists', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="no-festival"]').exists()).toBe(false)
@@ -181,7 +181,7 @@ describe('NextFestival', () => {
   describe('without festival', () => {
     it('should render no-festival message when festival is null', () => {
       const wrapper = mount(NextFestival, {
-        props: { festival: null },
+        props: { festival: null, loading: false },
       })
 
       const noFestival = wrapper.find('[data-testid="no-festival"]')
@@ -191,7 +191,7 @@ describe('NextFestival', () => {
 
     it('should not render hero card when festival is null', () => {
       const wrapper = mount(NextFestival, {
-        props: { festival: null },
+        props: { festival: null, loading: false },
       })
 
       expect(wrapper.find('[data-testid="hero-card"]').exists()).toBe(false)
@@ -199,7 +199,7 @@ describe('NextFestival', () => {
 
     it('should render helpful message when no festival', () => {
       const wrapper = mount(NextFestival, {
-        props: { festival: null },
+        props: { festival: null, loading: false },
       })
 
       const noFestival = wrapper.find('[data-testid="no-festival"]')
@@ -208,7 +208,7 @@ describe('NextFestival', () => {
 
     it('should return empty string for formattedDateRange when festival is null', () => {
       const wrapper = mount(NextFestival, {
-        props: { festival: null },
+        props: { festival: null, loading: false },
       })
 
       expect(wrapper.find('[data-testid="festival-dates"]').exists()).toBe(false)
@@ -216,10 +216,39 @@ describe('NextFestival', () => {
 
     it('should return empty string for countdownText when festival is null', () => {
       const wrapper = mount(NextFestival, {
-        props: { festival: null },
+        props: { festival: null, loading: false },
       })
 
       expect(wrapper.find('[data-testid="countdown-badge"]').exists()).toBe(false)
+    })
+  })
+
+  describe('loading state', () => {
+    it('should render loading state when loading is true and no festival', () => {
+      const wrapper = mount(NextFestival, {
+        props: { festival: null, loading: true },
+      })
+
+      const loadingState = wrapper.find('[data-testid="loading-state"]')
+      expect(loadingState.exists()).toBe(true)
+      expect(loadingState.text()).toContain('Chargement...')
+    })
+
+    it('should not render no-festival message when loading', () => {
+      const wrapper = mount(NextFestival, {
+        props: { festival: null, loading: true },
+      })
+
+      expect(wrapper.find('[data-testid="no-festival"]').exists()).toBe(false)
+    })
+
+    it('should still render festival when loading and festival exists', () => {
+      const festival = createMockFestival()
+      const wrapper = mount(NextFestival, {
+        props: { festival, loading: true },
+      })
+
+      expect(wrapper.find('[data-testid="hero-card"]').exists()).toBe(true)
     })
   })
 
@@ -227,7 +256,7 @@ describe('NextFestival', () => {
     it('should render the container', () => {
       const festival = createMockFestival()
       const wrapper = mount(NextFestival, {
-        props: { festival },
+        props: { festival, loading: false },
       })
 
       expect(wrapper.find('[data-testid="next-festival-container"]').exists()).toBe(true)
