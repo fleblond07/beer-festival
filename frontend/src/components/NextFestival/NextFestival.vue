@@ -47,7 +47,7 @@
                   clip-rule="evenodd"
                 />
               </svg>
-              <span class="text-lg">{{ festival.city }}, {{ festival.region }}</span>
+              <span class="text-lg">{{ festival.city }}</span>
             </div>
 
             <div class="flex items-center mb-4" data-testid="festival-dates">

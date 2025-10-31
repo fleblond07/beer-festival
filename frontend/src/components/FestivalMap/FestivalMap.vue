@@ -66,7 +66,7 @@ const addMarkers = () => {
     marker.bindPopup(`
       <div class="festival-popup">
         <h3 style="font-weight: bold; margin-bottom: 8px;">${festival.name}</h3>
-        <p style="margin-bottom: 4px;">${festival.city}, ${festival.region}</p>
+        <p style="margin-bottom: 4px;">${festival.city}</p>
         ${festival.breweryCount ? `<p style="color: #00d2d3;">${festival.breweryCount} brasseries</p>` : ''}
       </div>
     `)

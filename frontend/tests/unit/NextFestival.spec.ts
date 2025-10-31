@@ -61,7 +61,6 @@ describe('NextFestival', () => {
 
       const location = wrapper.find('[data-testid="festival-location"]').text()
       expect(location).toContain(festival.city)
-      expect(location).toContain(festival.region)
     })
 
     it('should render the festival dates', () => {

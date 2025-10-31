@@ -49,7 +49,7 @@
           />
         </svg>
         <span class="text-sm" data-testid="festival-location"
-          >{{ festival.city }}, {{ festival.region }}</span
+          >{{ festival.city }}</span
         >
       </div>
 
