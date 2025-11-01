@@ -33,6 +33,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   (_e: 'marker-click', _festival: Festival): void
+  (_e: 'popup-click', _festival: Festival): void
 }>()
 
 const mapContainer = ref<HTMLElement | null>(null)
@@ -67,12 +68,31 @@ const addMarkers = () => {
       <div class="festival-popup">
         <h3 style="font-weight: bold; margin-bottom: 8px;">${festival.name}</h3>
         <p style="margin-bottom: 4px;">${festival.city}</p>
-        ${festival.breweryCount ? `<p style="color: #00d2d3;">${festival.breweryCount} brasseries</p>` : ''}
+        ${festival.breweryCount ? `<p style="color: #00d2d3; margin-bottom: 8px;">${festival.breweryCount} brasseries</p>` : ''}
+        <button
+          class="popup-scroll-btn"
+          data-festival-id="${festival.id}"
+          style="background: #00d2d3; color: #1a1a2e; padding: 8px 16px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px; transition: background 0.2s;"
+          onmouseover="this.style.background='#00b8b9'"
+          onmouseout="this.style.background='#00d2d3'"
+        >
+          Voir dans la liste ↓
+        </button>
       </div>
     `)
 
     marker.on('click', () => {
       emit('marker-click', festival)
+    })
+
+    marker.on('popupopen', () => {
+      const popupElement = marker.getPopup()?.getElement()
+      const button = popupElement?.querySelector('.popup-scroll-btn')
+      if (button) {
+        button.addEventListener('click', () => {
+          emit('popup-click', festival)
+        })
+      }
     })
 
     markers.push(marker)

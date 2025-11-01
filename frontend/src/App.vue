@@ -30,14 +30,13 @@
       <FestivalMap
         :festivals="sortedFestivals"
         data-testid="festival-map-section"
-        @marker-click="handleMarkerClick"
+        @popup-click="handlePopupClick"
       />
 
       <FestivalList
         :festivals="sortedFestivals"
         :loading="loading"
         data-testid="festival-list-section"
-        @festival-click="handleFestivalClick"
       />
     </main>
 
@@ -65,11 +64,39 @@ onMounted(() => {
   fetchFestivals()
 })
 
-const handleMarkerClick = (festival: Festival) => {
-  console.log('Marker clicked:', festival.name)
-}
+const handlePopupClick = (festival: Festival) => {
+  const festivalElement = document.getElementById(`festival-${festival.id}`)
+  if (festivalElement) {
+    festivalElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    })
 
-const handleFestivalClick = (festival: Festival) => {
-  console.log('Festival clicked:', festival.name)
+    festivalElement.classList.add('highlight-festival')
+    setTimeout(() => {
+      festivalElement.classList.remove('highlight-festival')
+    }, 2000)
+  }
 }
 </script>
+
+<style scoped>
+:deep(.highlight-festival) {
+  animation: highlight 2s ease-in-out;
+}
+
+@keyframes highlight {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 100, 110, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(0, 100, 110, 0.5);
+    transform: scale(1.02);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 100, 110, 0);
+    transform: scale(1);
+  }
+}
+</style>

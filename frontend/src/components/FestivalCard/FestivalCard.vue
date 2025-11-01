@@ -1,5 +1,6 @@
 <template>
   <div
+    :id="`festival-${festival.id}`"
     class="festival-card bg-dark-card rounded-lg shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-accent-cyan/20 transition-all duration-300 cursor-pointer border border-dark-lighter"
     data-testid="festival-card"
     @click="$emit('click', festival)"
