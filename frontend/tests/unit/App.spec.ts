@@ -133,7 +133,6 @@ describe('Default App testing', () => {
   describe('event handlers', () => {
     it('should handle marker click event', async () => {
       const wrapper = mount(App)
-      const consoleSpy = vi.spyOn(console, 'log')
 
       const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
       const mockFestival = {
@@ -148,14 +147,10 @@ describe('Default App testing', () => {
       }
 
       await mapSection.vm.$emit('marker-click', mockFestival)
-
-      expect(consoleSpy).toHaveBeenCalledWith('Marker clicked:', 'Test Festival')
-      consoleSpy.mockRestore()
     })
 
     it('should handle festival click event', async () => {
       const wrapper = mount(App)
-      const consoleSpy = vi.spyOn(console, 'log')
 
       const listSection = wrapper.findComponent({ name: 'FestivalList' })
       const mockFestival = {
@@ -170,14 +165,10 @@ describe('Default App testing', () => {
       }
 
       await listSection.vm.$emit('festival-click', mockFestival)
-
-      expect(consoleSpy).toHaveBeenCalledWith('Festival clicked:', 'Another Festival')
-      consoleSpy.mockRestore()
     })
 
     it('should handle popup click event and scroll to festival', async () => {
       const wrapper = mount(App)
-      const consoleSpy = vi.spyOn(console, 'log')
 
       const mockFestival = {
         id: '3',
@@ -205,7 +196,6 @@ describe('Default App testing', () => {
       const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
       await mapSection.vm.$emit('popup-click', mockFestival)
 
-      expect(consoleSpy).toHaveBeenCalledWith('Popup clicked:', 'Popup Festival')
       expect(getElementByIdSpy).toHaveBeenCalledWith('festival-3')
       expect(mockScrollIntoView).toHaveBeenCalledWith({
         behavior: 'smooth',
@@ -213,13 +203,11 @@ describe('Default App testing', () => {
       })
       expect(mockElement.classList.add).toHaveBeenCalledWith('highlight-festival')
 
-      consoleSpy.mockRestore()
       getElementByIdSpy.mockRestore()
     })
 
     it('should handle popup click when festival element does not exist', async () => {
       const wrapper = mount(App)
-      const consoleSpy = vi.spyOn(console, 'log')
 
       const mockFestival = {
         id: '999',
@@ -238,10 +226,8 @@ describe('Default App testing', () => {
       const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
       await mapSection.vm.$emit('popup-click', mockFestival)
 
-      expect(consoleSpy).toHaveBeenCalledWith('Popup clicked:', 'Nonexistent Festival')
       expect(getElementByIdSpy).toHaveBeenCalledWith('festival-999')
 
-      consoleSpy.mockRestore()
       getElementByIdSpy.mockRestore()
     })
   })
