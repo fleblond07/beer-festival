@@ -10,6 +10,11 @@ vi.mock('leaflet', () => {
     bindPopup: vi.fn().mockReturnThis(),
     on: vi.fn().mockReturnThis(),
     remove: vi.fn(),
+    getPopup: vi.fn(() => ({
+      getElement: vi.fn(() => ({
+        querySelector: vi.fn(() => null),
+      })),
+    })),
   }
 
   const mockTileLayer = {
@@ -248,6 +253,34 @@ describe('FestivalMap', () => {
       const mapWrapper = wrapper.find('[data-testid="map-wrapper"]')
       const mapContainer = mapWrapper.find('[data-testid="map-container"]')
       expect(mapContainer.exists()).toBe(true)
+    })
+  })
+
+  describe('popup interactions', () => {
+    it('should emit popup-click event', async () => {
+      const festivals = [createMockFestival('1')]
+      const wrapper = mount(FestivalMap, {
+        props: { festivals },
+      })
+
+      const mockFestival = festivals[0]
+      await wrapper.vm.$emit('popup-click', mockFestival)
+
+      expect(wrapper.emitted('popup-click')).toBeTruthy()
+      expect(wrapper.emitted('popup-click')?.[0]).toEqual([mockFestival])
+    })
+
+    it('should emit marker-click event when marker is clicked', async () => {
+      const festivals = [createMockFestival('1')]
+      const wrapper = mount(FestivalMap, {
+        props: { festivals },
+      })
+
+      const mockFestival = festivals[0]
+      await wrapper.vm.$emit('marker-click', mockFestival)
+
+      expect(wrapper.emitted('marker-click')).toBeTruthy()
+      expect(wrapper.emitted('marker-click')?.[0]).toEqual([mockFestival])
     })
   })
 })

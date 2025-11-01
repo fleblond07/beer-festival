@@ -178,6 +178,16 @@ describe('FestivalCard', () => {
   })
 
   describe('interactions', () => {
+    it('should render with unique ID based on festival ID', () => {
+      const festival = createMockFestival({ id: 'test-123' })
+      const wrapper = mount(FestivalCard, {
+        props: { festival },
+      })
+
+      const card = wrapper.find('[data-testid="festival-card"]')
+      expect(card.attributes('id')).toBe('festival-test-123')
+    })
+
     it('should emit click event when card is clicked', async () => {
       const festival = createMockFestival()
       const wrapper = mount(FestivalCard, {

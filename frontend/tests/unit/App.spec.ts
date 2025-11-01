@@ -174,5 +174,75 @@ describe('Default App testing', () => {
       expect(consoleSpy).toHaveBeenCalledWith('Festival clicked:', 'Another Festival')
       consoleSpy.mockRestore()
     })
+
+    it('should handle popup click event and scroll to festival', async () => {
+      const wrapper = mount(App)
+      const consoleSpy = vi.spyOn(console, 'log')
+
+      const mockFestival = {
+        id: '3',
+        name: 'Popup Festival',
+        description: 'Test',
+        startDate: '2025-12-01',
+        endDate: '2025-12-03',
+        city: 'Marseille',
+        region: "Provence-Alpes-Côte d'Azur",
+        location: { latitude: 43.2965, longitude: 5.3698 },
+      }
+
+      const mockScrollIntoView = vi.fn()
+      const mockElement = {
+        scrollIntoView: mockScrollIntoView,
+        classList: {
+          add: vi.fn(),
+          remove: vi.fn(),
+        },
+      }
+
+      const getElementByIdSpy = vi.spyOn(document, 'getElementById')
+      getElementByIdSpy.mockReturnValue(mockElement as any)
+
+      const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
+      await mapSection.vm.$emit('popup-click', mockFestival)
+
+      expect(consoleSpy).toHaveBeenCalledWith('Popup clicked:', 'Popup Festival')
+      expect(getElementByIdSpy).toHaveBeenCalledWith('festival-3')
+      expect(mockScrollIntoView).toHaveBeenCalledWith({
+        behavior: 'smooth',
+        block: 'center',
+      })
+      expect(mockElement.classList.add).toHaveBeenCalledWith('highlight-festival')
+
+      consoleSpy.mockRestore()
+      getElementByIdSpy.mockRestore()
+    })
+
+    it('should handle popup click when festival element does not exist', async () => {
+      const wrapper = mount(App)
+      const consoleSpy = vi.spyOn(console, 'log')
+
+      const mockFestival = {
+        id: '999',
+        name: 'Nonexistent Festival',
+        description: 'Test',
+        startDate: '2025-12-01',
+        endDate: '2025-12-03',
+        city: 'Marseille',
+        region: "Provence-Alpes-Côte d'Azur",
+        location: { latitude: 43.2965, longitude: 5.3698 },
+      }
+
+      const getElementByIdSpy = vi.spyOn(document, 'getElementById')
+      getElementByIdSpy.mockReturnValue(null)
+
+      const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
+      await mapSection.vm.$emit('popup-click', mockFestival)
+
+      expect(consoleSpy).toHaveBeenCalledWith('Popup clicked:', 'Nonexistent Festival')
+      expect(getElementByIdSpy).toHaveBeenCalledWith('festival-999')
+
+      consoleSpy.mockRestore()
+      getElementByIdSpy.mockRestore()
+    })
   })
 })
