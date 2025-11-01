@@ -30,7 +30,6 @@
       <FestivalMap
         :festivals="sortedFestivals"
         data-testid="festival-map-section"
-        @marker-click="handleMarkerClick"
         @popup-click="handlePopupClick"
       />
 
@@ -38,7 +37,6 @@
         :festivals="sortedFestivals"
         :loading="loading"
         data-testid="festival-list-section"
-        @festival-click="handleFestivalClick"
       />
     </main>
 
@@ -66,12 +64,7 @@ onMounted(() => {
   fetchFestivals()
 })
 
-const handleMarkerClick = (festival: Festival) => {
-  console.log('Marker clicked:', festival.name)
-}
-
 const handlePopupClick = (festival: Festival) => {
-  console.log('Popup clicked:', festival.name)
   const festivalElement = document.getElementById(`festival-${festival.id}`)
   if (festivalElement) {
     festivalElement.scrollIntoView({
@@ -84,10 +77,6 @@ const handlePopupClick = (festival: Festival) => {
       festivalElement.classList.remove('highlight-festival')
     }, 2000)
   }
-}
-
-const handleFestivalClick = (festival: Festival) => {
-  console.log('Festival clicked:', festival.name)
 }
 </script>
 
