@@ -46,3 +46,31 @@ type Config struct {
 	SupabaseURL    string
 	SupabaseKey    string
 }
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	User         User   `json:"user"`
+}
+
+type User struct {
+	ID    string `json:"id"`
+	Email string `json:"email"`
+}
+
+type VerifyResponse struct {
+	Valid bool   `json:"valid"`
+	User  *User  `json:"user,omitempty"`
+	Error string `json:"error,omitempty"`
+}
+
+type DatabaseInterface interface {
+	Login(email, password string) (*LoginResponse, error)
+	VerifyToken(token string) (*User, error)
+	GetFestivals() ([]Festival, error)
+}

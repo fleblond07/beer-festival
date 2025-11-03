@@ -23,6 +23,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc(HealthPath, healthCheckHandler)
 	mux.HandleFunc(FestivalsPath, makeFestivalsHandlerWithDB(db, config.AllowedOrigins))
+	mux.HandleFunc(LoginPath, makeLoginHandler(db, config.AllowedOrigins))
+	mux.HandleFunc(VerifyPath, makeVerifyHandler(db, config.AllowedOrigins))
 
 	handler := chainMiddleware(mux, requestIDMiddleware, metricsMiddleware, gzipMiddleware)
 
