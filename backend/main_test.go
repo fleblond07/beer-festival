@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -115,8 +116,8 @@ func TestFestivalsHandler(t *testing.T) {
 		}
 
 		methods := w.Header().Get("Access-Control-Allow-Methods")
-		if methods != "GET, OPTIONS" {
-			t.Errorf("Expected CORS methods 'GET, OPTIONS', got %s", methods)
+		if methods != "GET, POST, OPTIONS" {
+			t.Errorf("Expected CORS methods 'GET, POST, OPTIONS', got %s", methods)
 		}
 	})
 
@@ -242,4 +243,319 @@ func TestEnableCORS(t *testing.T) {
 			t.Errorf("Expected no CORS origin, got %s", origin)
 		}
 	})
+}
+
+type MockDatabase struct {
+	loginFunc       func(email, password string) (*LoginResponse, error)
+	verifyTokenFunc func(token string) (*User, error)
+}
+
+func (m *MockDatabase) Login(email, password string) (*LoginResponse, error) {
+	if m.loginFunc != nil {
+		return m.loginFunc(email, password)
+	}
+	return nil, nil
+}
+
+func (m *MockDatabase) VerifyToken(token string) (*User, error) {
+	if m.verifyTokenFunc != nil {
+		return m.verifyTokenFunc(token)
+	}
+	return nil, nil
+}
+
+func (m *MockDatabase) GetFestivals() ([]Festival, error) {
+	return nil, nil
+}
+
+func TestLoginHandler(t *testing.T) {
+	t.Run("returns token on successful login", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			loginFunc: func(email, password string) (*LoginResponse, error) {
+				if email == "test@example.com" && password == "password123" {
+					return &LoginResponse{
+						AccessToken:  "mock-access-token",
+						RefreshToken: "mock-refresh-token",
+						User: User{
+							ID:    "user-123",
+							Email: "test@example.com",
+						},
+					}, nil
+				}
+				return nil, nil
+			},
+		}
+
+		body := []byte(`{"email":"test@example.com","password":"password123"}`)
+		req := httptest.NewRequest("POST", "/api/auth/login", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		handler := makeLoginHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var response LoginResponse
+		if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if response.AccessToken != "mock-access-token" {
+			t.Errorf("Expected access token 'mock-access-token', got %s", response.AccessToken)
+		}
+
+		if response.User.Email != "test@example.com" {
+			t.Errorf("Expected user email 'test@example.com', got %s", response.User.Email)
+		}
+	})
+
+	t.Run("returns 401 on invalid credentials", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			loginFunc: func(email, password string) (*LoginResponse, error) {
+				return nil, &DatabaseError{Message: "invalid credentials"}
+			},
+		}
+
+		body := []byte(`{"email":"test@example.com","password":"wrongpassword"}`)
+		req := httptest.NewRequest("POST", "/api/auth/login", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		handler := makeLoginHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("Expected status 401, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 on missing email", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		body := []byte(`{"password":"password123"}`)
+		req := httptest.NewRequest("POST", "/api/auth/login", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		handler := makeLoginHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 on missing password", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		body := []byte(`{"email":"test@example.com"}`)
+		req := httptest.NewRequest("POST", "/api/auth/login", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		handler := makeLoginHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 405 on non-POST request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("GET", "/api/auth/login", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeLoginHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("Expected status 405, got %d", w.Code)
+		}
+	})
+
+	t.Run("handles OPTIONS request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("OPTIONS", "/api/auth/login", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeLoginHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
+}
+
+func TestVerifyHandler(t *testing.T) {
+	t.Run("returns valid response with valid token", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				if token == "valid-token" {
+					return &User{
+						ID:    "user-123",
+						Email: "test@example.com",
+					}, nil
+				}
+				return nil, &DatabaseError{Message: "invalid token"}
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/auth/verify", nil)
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeVerifyHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var response VerifyResponse
+		if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if !response.Valid {
+			t.Error("Expected valid to be true")
+		}
+
+		if response.User == nil {
+			t.Fatal("Expected user to be present")
+		}
+
+		if response.User.Email != "test@example.com" {
+			t.Errorf("Expected user email 'test@example.com', got %s", response.User.Email)
+		}
+	})
+
+	t.Run("returns invalid response with invalid token", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return nil, &DatabaseError{Message: "invalid token"}
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/auth/verify", nil)
+		req.Header.Set("Authorization", "Bearer invalid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeVerifyHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var response VerifyResponse
+		if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if response.Valid {
+			t.Error("Expected valid to be false")
+		}
+
+		if response.Error != "Invalid token" {
+			t.Errorf("Expected error 'Invalid token', got %s", response.Error)
+		}
+	})
+
+	t.Run("returns invalid response without authorization header", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("GET", "/api/auth/verify", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeVerifyHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var response VerifyResponse
+		if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if response.Valid {
+			t.Error("Expected valid to be false")
+		}
+
+		if response.Error != "No authorization header" {
+			t.Errorf("Expected error 'No authorization header', got %s", response.Error)
+		}
+	})
+
+	t.Run("returns invalid response without Bearer prefix", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("GET", "/api/auth/verify", nil)
+		req.Header.Set("Authorization", "invalid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeVerifyHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var response VerifyResponse
+		if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if response.Valid {
+			t.Error("Expected valid to be false")
+		}
+
+		if response.Error != "Invalid authorization format" {
+			t.Errorf("Expected error 'Invalid authorization format', got %s", response.Error)
+		}
+	})
+
+	t.Run("returns 405 on non-GET request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("POST", "/api/auth/verify", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeVerifyHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("Expected status 405, got %d", w.Code)
+		}
+	})
+
+	t.Run("handles OPTIONS request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("OPTIONS", "/api/auth/verify", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeVerifyHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
+}
+
+type DatabaseError struct {
+	Message string
+}
+
+func (e *DatabaseError) Error() string {
+	return e.Message
 }

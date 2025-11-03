@@ -11,12 +11,14 @@ const (
 
 	ContentTypeJSON = "application/json"
 
-	CORSMethods = "GET, OPTIONS"
-	CORSHeaders = "Content-Type"
+	CORSMethods = "GET, POST, OPTIONS"
+	CORSHeaders = "Content-Type, Authorization"
 
 	APIBasePath   = "/api/v1"
 	HealthPath    = "/health"
 	FestivalsPath = "/api/festivals"
+	LoginPath     = "/api/auth/login"
+	VerifyPath    = "/api/auth/verify"
 
 	AppVersion = "1.0.0"
 )

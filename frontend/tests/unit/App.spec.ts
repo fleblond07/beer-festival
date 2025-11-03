@@ -1,234 +1,95 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { mount } from '@vue/test-utils'
 import App from '@/App.vue'
 
-vi.mock('leaflet', () => {
-  const mockMarker = {
-    addTo: vi.fn().mockReturnThis(),
-    bindPopup: vi.fn().mockReturnThis(),
-    on: vi.fn().mockReturnThis(),
-    remove: vi.fn(),
-  }
-
-  const mockTileLayer = {
-    addTo: vi.fn().mockReturnThis(),
-  }
-
-  const mockFeatureGroup = {
-    getBounds: vi.fn(() => ({
-      pad: vi.fn(() => ({
-        _southWest: { lat: 0, lng: 0 },
-        _northEast: { lat: 10, lng: 10 },
-      })),
-    })),
-  }
-
-  const mockMap = {
-    setView: vi.fn().mockReturnThis(),
-    remove: vi.fn(),
-    fitBounds: vi.fn(),
-  }
-
-  return {
-    default: {
-      map: vi.fn(() => mockMap),
-      tileLayer: vi.fn(() => mockTileLayer),
-      marker: vi.fn(() => mockMarker),
-      icon: vi.fn(options => options),
-      featureGroup: vi.fn(() => mockFeatureGroup),
-    },
-  }
-})
-
 describe('Default App testing', () => {
+  const mountWithRouter = () => {
+    return mount(App, {
+      global: {
+        stubs: {
+          RouterLink: {
+            template: '<a><slot /></a>',
+          },
+          RouterView: {
+            template: '<div></div>',
+          },
+        },
+      },
+    })
+  }
+
   describe('rendering', () => {
     it('should render the app', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('[data-testid="app"]').exists()).toBe(true)
     })
 
     it('should render the site title', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('[data-testid="site-title"]').text()).toBe('Festivals de Bière')
     })
 
     it('should render the site tagline', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('[data-testid="site-tagline"]').text()).toContain(
         'Découvrez les meilleurs festivals de France'
       )
     })
 
     it('should render the logo icon', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('[data-testid="logo-icon"]').exists()).toBe(true)
     })
 
     it('should render footer text', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('[data-testid="footer-text"]').exists()).toBe(true)
     })
-  })
 
-  describe('components', () => {
-    it('should render NextFestival section', () => {
-      const wrapper = mount(App)
-      expect(wrapper.find('[data-testid="next-festival-section"]').exists()).toBe(true)
+    it('should render lock icon', () => {
+      const wrapper = mountWithRouter()
+      expect(wrapper.find('[data-testid="lock-icon"]').exists()).toBe(true)
     })
 
-    it('should render FestivalMap section', () => {
-      const wrapper = mount(App)
-      expect(wrapper.find('[data-testid="festival-map-section"]').exists()).toBe(true)
-    })
-
-    it('should render FestivalList section', () => {
-      const wrapper = mount(App)
-      expect(wrapper.find('[data-testid="festival-list-section"]').exists()).toBe(true)
+    it('should render admin link', () => {
+      const wrapper = mountWithRouter()
+      expect(wrapper.find('[data-testid="admin-link"]').exists()).toBe(true)
     })
   })
 
   describe('structure', () => {
     it('should have header element', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('header').exists()).toBe(true)
     })
 
     it('should have main element', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('main').exists()).toBe(true)
     })
 
     it('should have footer element', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('footer').exists()).toBe(true)
-    })
-
-    it('should render sections in correct order', () => {
-      const wrapper = mount(App)
-      expect(wrapper.find('[data-testid="next-festival-section"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="festival-map-section"]').exists()).toBe(true)
-      expect(wrapper.find('[data-testid="festival-list-section"]').exists()).toBe(true)
     })
   })
 
   describe('layout', () => {
     it('should have min-h-screen class on root', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       expect(wrapper.find('[data-testid="app"]').classes()).toContain('min-h-screen')
     })
 
     it('should have proper header styling', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       const header = wrapper.find('header')
       expect(header.classes()).toContain('bg-gradient-to-r')
     })
 
     it('should have proper footer styling', () => {
-      const wrapper = mount(App)
+      const wrapper = mountWithRouter()
       const footer = wrapper.find('footer')
       expect(footer.classes()).toContain('bg-dark-card')
-    })
-  })
-
-  describe('event handlers', () => {
-    it('should handle marker click event', async () => {
-      const wrapper = mount(App)
-
-      const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
-      const mockFestival = {
-        id: '1',
-        name: 'Test Festival',
-        description: 'Test',
-        startDate: '2025-10-15',
-        endDate: '2025-10-17',
-        city: 'Paris',
-        region: 'Île-de-France',
-        location: { latitude: 48.8566, longitude: 2.3522 },
-      }
-
-      await mapSection.vm.$emit('marker-click', mockFestival)
-    })
-
-    it('should handle festival click event', async () => {
-      const wrapper = mount(App)
-
-      const listSection = wrapper.findComponent({ name: 'FestivalList' })
-      const mockFestival = {
-        id: '2',
-        name: 'Another Festival',
-        description: 'Test',
-        startDate: '2025-11-01',
-        endDate: '2025-11-03',
-        city: 'Lyon',
-        region: 'Auvergne-Rhône-Alpes',
-        location: { latitude: 45.764, longitude: 4.8357 },
-      }
-
-      await listSection.vm.$emit('festival-click', mockFestival)
-    })
-
-    it('should handle popup click event and scroll to festival', async () => {
-      const wrapper = mount(App)
-
-      const mockFestival = {
-        id: '3',
-        name: 'Popup Festival',
-        description: 'Test',
-        startDate: '2025-12-01',
-        endDate: '2025-12-03',
-        city: 'Marseille',
-        region: "Provence-Alpes-Côte d'Azur",
-        location: { latitude: 43.2965, longitude: 5.3698 },
-      }
-
-      const mockScrollIntoView = vi.fn()
-      const mockElement = {
-        scrollIntoView: mockScrollIntoView,
-        classList: {
-          add: vi.fn(),
-          remove: vi.fn(),
-        },
-      }
-
-      const getElementByIdSpy = vi.spyOn(document, 'getElementById')
-      getElementByIdSpy.mockReturnValue(mockElement as any)
-
-      const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
-      await mapSection.vm.$emit('popup-click', mockFestival)
-
-      expect(getElementByIdSpy).toHaveBeenCalledWith('festival-3')
-      expect(mockScrollIntoView).toHaveBeenCalledWith({
-        behavior: 'smooth',
-        block: 'center',
-      })
-      expect(mockElement.classList.add).toHaveBeenCalledWith('highlight-festival')
-
-      getElementByIdSpy.mockRestore()
-    })
-
-    it('should handle popup click when festival element does not exist', async () => {
-      const wrapper = mount(App)
-
-      const mockFestival = {
-        id: '999',
-        name: 'Nonexistent Festival',
-        description: 'Test',
-        startDate: '2025-12-01',
-        endDate: '2025-12-03',
-        city: 'Marseille',
-        region: "Provence-Alpes-Côte d'Azur",
-        location: { latitude: 43.2965, longitude: 5.3698 },
-      }
-
-      const getElementByIdSpy = vi.spyOn(document, 'getElementById')
-      getElementByIdSpy.mockReturnValue(null)
-
-      const mapSection = wrapper.findComponent({ name: 'FestivalMap' })
-      await mapSection.vm.$emit('popup-click', mockFestival)
-
-      expect(getElementByIdSpy).toHaveBeenCalledWith('festival-999')
-
-      getElementByIdSpy.mockRestore()
     })
   })
 })

@@ -3,12 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/supabase-community/supabase-go"
 )
 
 type Database struct {
 	client *supabase.Client
+	url    string
+	key    string
 }
 
 func NewDatabase(supabaseURL, supabaseKey string) (*Database, error) {
@@ -21,7 +24,11 @@ func NewDatabase(supabaseURL, supabaseKey string) (*Database, error) {
 		return nil, fmt.Errorf("failed to create Supabase client: %w", err)
 	}
 
-	return &Database{client: client}, nil
+	return &Database{
+		client: client,
+		url:    supabaseURL,
+		key:    supabaseKey,
+	}, nil
 }
 
 type BreweryCount struct {
@@ -81,4 +88,54 @@ func (db *Database) getBreweryCounts() (map[int64]int, error) {
 		return result, nil
 	}
 	return nil, err
+}
+
+func (db *Database) Login(email, password string) (*LoginResponse, error) {
+	resp, err := db.client.Auth.SignInWithEmailPassword(email, password)
+	if err != nil {
+		return nil, fmt.Errorf("authentication failed: %w", err)
+	}
+
+	return &LoginResponse{
+		AccessToken:  resp.AccessToken,
+		RefreshToken: resp.RefreshToken,
+		User: User{
+			ID:    resp.User.ID.String(),
+			Email: resp.User.Email,
+		},
+	}, nil
+}
+
+func (db *Database) VerifyToken(token string) (*User, error) {
+	req, err := http.NewRequest("GET", db.url+"/auth/v1/user", nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("apikey", db.key)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to verify token: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("invalid token: status %d", resp.StatusCode)
+	}
+
+	var userResp struct {
+		ID    string `json:"id"`
+		Email string `json:"email"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&userResp); err != nil {
+		return nil, fmt.Errorf("failed to decode user response: %w", err)
+	}
+
+	return &User{
+		ID:    userResp.ID,
+		Email: userResp.Email,
+	}, nil
 }

@@ -53,7 +53,7 @@ func makeFestivalsHandler(festivals []Festival, allowedOrigins string) http.Hand
 	}
 }
 
-func makeFestivalsHandlerWithDB(db *Database, allowedOrigins string) http.HandlerFunc {
+func makeFestivalsHandlerWithDB(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		enableCORS(w, r, allowedOrigins)
 
@@ -75,5 +75,98 @@ func makeFestivalsHandlerWithDB(db *Database, allowedOrigins string) http.Handle
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+func makeLoginHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != "POST" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var loginReq LoginRequest
+		if err := json.NewDecoder(r.Body).Decode(&loginReq); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		if loginReq.Email == "" || loginReq.Password == "" {
+			http.Error(w, "Email and password are required", http.StatusBadRequest)
+			return
+		}
+
+		loginResp, err := db.Login(loginReq.Email, loginReq.Password)
+		if err != nil {
+			log.Printf("Login failed for %s: %v", loginReq.Email, err)
+			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		if err := json.NewEncoder(w).Encode(loginResp); err != nil {
+			log.Printf("Error encoding login response: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func makeVerifyHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != "GET" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			w.Header().Set(HeaderContentType, ContentTypeJSON)
+			json.NewEncoder(w).Encode(VerifyResponse{
+				Valid: false,
+				Error: "No authorization header",
+			})
+			return
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		if token == authHeader {
+			w.Header().Set(HeaderContentType, ContentTypeJSON)
+			json.NewEncoder(w).Encode(VerifyResponse{
+				Valid: false,
+				Error: "Invalid authorization format",
+			})
+			return
+		}
+
+		user, err := db.VerifyToken(token)
+		if err != nil {
+			w.Header().Set(HeaderContentType, ContentTypeJSON)
+			json.NewEncoder(w).Encode(VerifyResponse{
+				Valid: false,
+				Error: "Invalid token",
+			})
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		json.NewEncoder(w).Encode(VerifyResponse{
+			Valid: true,
+			User:  user,
+		})
 	}
 }
