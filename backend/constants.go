@@ -21,4 +21,6 @@ const (
 	VerifyPath    = "/api/auth/verify"
 
 	AppVersion = "1.0.0"
+
+	DefaultErrorMessage = "Internal server error"
 )

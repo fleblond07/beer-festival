@@ -11,4 +11,9 @@ jobs:
   deploy:
     needs: code-validation
     uses: ./.github/workflows/deploy.yml
-    secrets: inherit
+    secrets:
+      VPS_HOST: ${{secrets.VPS_HOST}}
+      VPS_USER: ${{secrets.VPS_USER}}
+      VPS_SSH_KEY: ${{secrets.VPS_SSH_KEY}}
+      SUPABASE_URL: ${{secrets.SUPABASE_URL}}
+      SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
