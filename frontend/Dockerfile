@@ -24,7 +24,7 @@ RUN npm install --ignore-scripts -g serve
 COPY --from=build /app/dist ./dist
 
 RUN adduser -D beer-festival
-USER festival
+USER beer-festival
 
 EXPOSE 1338
 
