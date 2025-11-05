@@ -19,7 +19,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-RUN npm install -g serve --ignore-scripts
+RUN npm install --ignore-scripts -g serve
 
 COPY --from=build /app/dist ./dist
 
