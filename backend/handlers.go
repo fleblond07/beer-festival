@@ -47,7 +47,7 @@ func makeFestivalsHandler(festivals []Festival, allowedOrigins string) http.Hand
 		w.Header().Set(HeaderContentType, ContentTypeJSON)
 		if err := json.NewEncoder(w).Encode(festivals); err != nil {
 			log.Printf("Error encoding festivals: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
 			return
 		}
 	}
@@ -65,14 +65,14 @@ func makeFestivalsHandlerWithDB(db DatabaseInterface, allowedOrigins string) htt
 		festivals, err := db.GetFestivals()
 		if err != nil {
 			log.Printf("Error fetching festivals from database: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
 			return
 		}
 
 		w.Header().Set(HeaderContentType, ContentTypeJSON)
 		if err := json.NewEncoder(w).Encode(festivals); err != nil {
 			log.Printf("Error encoding festivals: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
 			return
 		}
 	}
@@ -105,7 +105,6 @@ func makeLoginHandler(db DatabaseInterface, allowedOrigins string) http.HandlerF
 
 		loginResp, err := db.Login(loginReq.Email, loginReq.Password)
 		if err != nil {
-			log.Printf("Login failed for %s: %v", loginReq.Email, err)
 			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 			return
 		}
@@ -113,7 +112,7 @@ func makeLoginHandler(db DatabaseInterface, allowedOrigins string) http.HandlerF
 		w.Header().Set(HeaderContentType, ContentTypeJSON)
 		if err := json.NewEncoder(w).Encode(loginResp); err != nil {
 			log.Printf("Error encoding login response: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
 			return
 		}
 	}

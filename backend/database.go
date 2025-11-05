@@ -50,15 +50,15 @@ func (db *Database) GetFestivals() ([]Festival, error) {
 
 	festivals := make([]Festival, len(festivalsDB))
 	for i, fdb := range festivalsDB {
-		start_date, _ := ConvertTime(fdb.StartDate)
-		end_date, _ := ConvertTime(fdb.EndDate)
+		startDate, _ := ConvertTime(fdb.StartDate)
+		endDate, _ := ConvertTime(fdb.EndDate)
 
 		festivals[i] = Festival{
 			ID:          fdb.ID,
 			Name:        fdb.Name,
 			Description: fdb.Description,
-			StartDate:   start_date,
-			EndDate:     end_date,
+			StartDate:   startDate,
+			EndDate:     endDate,
 			City:        fdb.City,
 			Region:      fdb.Region,
 			Location: Location{
