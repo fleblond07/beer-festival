@@ -18,7 +18,7 @@ ENV PORT=1337
 COPY --from=build /app/beer-festival-backend .
 
 RUN adduser -D beer-festival
-USER festival
+USER beer-festival
 
 EXPOSE 1337
 CMD ["./beer-festival-backend"]
