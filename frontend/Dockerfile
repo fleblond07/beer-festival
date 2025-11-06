@@ -6,6 +6,8 @@ COPY package.json package-lock.json ./
 
 RUN npm ci --ignore-scripts
 
+COPY .env.prod ./.env
+
 COPY . .
 
 RUN npm run build
