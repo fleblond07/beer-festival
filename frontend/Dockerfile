@@ -6,12 +6,7 @@ COPY package.json package-lock.json ./
 
 RUN npm ci --ignore-scripts
 
-COPY src/ ./src
-COPY public/ ./public
-COPY tsconfig.* ./
-COPY vite.config.* ./
-COPY .env.prod ./.env
-COPY index.html ./
+COPY . .
 
 RUN npm run build
 
