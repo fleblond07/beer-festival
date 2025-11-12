@@ -1,11 +1,18 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import FestivalCard from '@/components/FestivalCard/FestivalCard.vue'
 import type { Festival } from '@/types'
 import dayjs from 'dayjs'
 
+const mockPush = vi.fn()
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}))
+
 const createMockFestival = (overrides?: Partial<Festival>): Festival => ({
-  id: '1',
+  id: 1,
   name: 'Test Festival',
   description: 'A great beer festival',
   startDate: dayjs().add(10, 'days').format('YYYY-MM-DD'),
@@ -188,28 +195,29 @@ describe('FestivalCard', () => {
       expect(card.attributes('id')).toBe('festival-test-123')
     })
 
-    it('should emit click event when card is clicked', async () => {
+    it('should navigate to festival detail when card is clicked', async () => {
       const festival = createMockFestival()
       const wrapper = mount(FestivalCard, {
         props: { festival },
       })
 
+      mockPush.mockClear()
       await wrapper.find('[data-testid="festival-card"]').trigger('click')
 
-      expect(wrapper.emitted('click')).toBeTruthy()
-      expect(wrapper.emitted('click')?.[0]).toEqual([festival])
+      expect(mockPush).toHaveBeenCalledWith(`/festival/${festival.id}`)
     })
 
-    it('should not emit click event when website link is clicked', async () => {
+    it('should not navigate when website link is clicked', async () => {
       const festival = createMockFestival()
       const wrapper = mount(FestivalCard, {
         props: { festival },
       })
 
+      mockPush.mockClear()
       const website = wrapper.find('[data-testid="festival-website"]')
       await website.trigger('click')
 
-      expect(wrapper.emitted('click')).toBeFalsy()
+      expect(mockPush).not.toHaveBeenCalled()
     })
 
     it('should have cursor-pointer class for interactivity', () => {

@@ -118,13 +118,13 @@ describe('useFestivals', () => {
       const futureEndDate = now.add(2, 'months').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...mockFestivals[0], id: '1', startDate: pastDate, endDate: pastDate },
-        { ...mockFestivals[1], id: '2', startDate: futureDate, endDate: futureEndDate },
+        { ...mockFestivals[0], id: 1, startDate: pastDate, endDate: pastDate },
+        { ...mockFestivals[1], id: 2, startDate: futureDate, endDate: futureEndDate },
       ]
 
       const sorted = sortedFestivals.value
       expect(sorted.length).toBe(1)
-      expect(sorted[0].id).toBe('2') // Only future festival
+      expect(sorted[0].id).toBe(2)
     })
 
     it('should sort upcoming festivals by date (earliest first)', async () => {
@@ -137,15 +137,15 @@ describe('useFestivals', () => {
       const futureEndDate = dayjs().add(20, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...mockFestivals[0], id: '1', startDate: futureDate1, endDate: futureEndDate },
-        { ...mockFestivals[1], id: '2', startDate: futureDate2, endDate: futureEndDate },
-        { ...mockFestivals[2], id: '3', startDate: futureDate3, endDate: futureEndDate },
+        { ...mockFestivals[0], id: 1, startDate: futureDate1, endDate: futureEndDate },
+        { ...mockFestivals[1], id: 2, startDate: futureDate2, endDate: futureEndDate },
+        { ...mockFestivals[2], id: 3, startDate: futureDate3, endDate: futureEndDate },
       ]
 
       const sorted = sortedFestivals.value
-      expect(sorted[0].id).toBe('2')
-      expect(sorted[1].id).toBe('1')
-      expect(sorted[2].id).toBe('3')
+      expect(sorted[0].id).toBe(2)
+      expect(sorted[1].id).toBe(1)
+      expect(sorted[2].id).toBe(3)
     })
 
     it('should not include festivals that have ended', async () => {
@@ -157,9 +157,9 @@ describe('useFestivals', () => {
       const pastDate3 = dayjs().subtract(15, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...mockFestivals[0], id: '1', startDate: pastDate1, endDate: pastDate1 },
-        { ...mockFestivals[1], id: '2', startDate: pastDate2, endDate: pastDate2 },
-        { ...mockFestivals[2], id: '3', startDate: pastDate3, endDate: pastDate3 },
+        { ...mockFestivals[0], id: 1, startDate: pastDate1, endDate: pastDate1 },
+        { ...mockFestivals[1], id: 2, startDate: pastDate2, endDate: pastDate2 },
+        { ...mockFestivals[2], id: 3, startDate: pastDate3, endDate: pastDate3 },
       ]
 
       const sorted = sortedFestivals.value
@@ -176,14 +176,14 @@ describe('useFestivals', () => {
       const futureEndDate2 = dayjs().add(15, 'days').format('YYYY-MM-DD')
 
       festivals.value = [
-        { ...mockFestivals[0], id: '1', startDate: pastStartDate, endDate: futureEndDate },
-        { ...mockFestivals[1], id: '2', startDate: futureDate, endDate: futureEndDate2 },
+        { ...mockFestivals[0], id: 1, startDate: pastStartDate, endDate: futureEndDate },
+        { ...mockFestivals[1], id: 2, startDate: futureDate, endDate: futureEndDate2 },
       ]
 
       const sorted = sortedFestivals.value
       expect(sorted.length).toBe(2)
-      expect(sorted[0].id).toBe('2') // Upcoming festival comes first
-      expect(sorted[1].id).toBe('1') // Ongoing festival (already started, so not upcoming)
+      expect(sorted[0].id).toBe(2)
+      expect(sorted[1].id).toBe(1)
     })
   })
 
@@ -242,7 +242,7 @@ describe('useFestivals', () => {
       const { getFestivalById, fetchFestivals } = useFestivals()
       await fetchFestivals()
 
-      const result = getFestivalById('non-existent-id')
+      const result = getFestivalById(999999)
       expect(result).toBeUndefined()
     })
 
@@ -254,6 +254,31 @@ describe('useFestivals', () => {
       const result = getFestivalById(targetFestival.id)
 
       expect(result).toEqual(targetFestival)
+    })
+  })
+
+  describe('error handling', () => {
+    it('should handle fetch error when response is not ok', async () => {
+      global.fetch = vi.fn(() =>
+        Promise.resolve({
+          ok: false,
+          json: () => Promise.resolve([]),
+        } as Response)
+      )
+
+      const { error, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
+      expect(error.value).toBe('Failed to fetch festivals')
+    })
+
+    it('should handle non-Error exceptions', async () => {
+      global.fetch = vi.fn(() => Promise.reject('String error'))
+
+      const { error, fetchFestivals } = useFestivals()
+      await fetchFestivals()
+
+      expect(error.value).toBe('An error occurred')
     })
   })
 })

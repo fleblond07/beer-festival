@@ -54,60 +54,13 @@ func TestGetConfig(t *testing.T) {
 }
 
 func TestFestivalsHandler(t *testing.T) {
-	mockFestivals := []Festival{
-		{
-			ID:          1,
-			Name:        "Test Festival",
-			Description: "A test festival",
-			StartDate:   time.Date(2025, 10, 1, 0, 0, 0, 0, time.UTC),
-			EndDate:     time.Date(2025, 10, 3, 0, 0, 0, 0, time.UTC),
-			City:        "Paris",
-			Region:      "Île-de-France",
-			Location: Location{
-				Latitude:  48.8566,
-				Longitude: 2.3522,
-			},
-			Image:        "https://example.com/image.jpg",
-			Website:      "https://example.com",
-			BreweryCount: 50,
-		},
-	}
-
-	t.Run("returns festivals as JSON", func(t *testing.T) {
-		req := httptest.NewRequest("GET", "/api/festivals", nil)
-		w := httptest.NewRecorder()
-
-		handler := makeFestivalsHandler(mockFestivals, "*")
-		handler(w, req)
-
-		if w.Code != http.StatusOK {
-			t.Errorf("Expected status 200, got %d", w.Code)
-		}
-
-		contentType := w.Header().Get("Content-Type")
-		if contentType != "application/json" {
-			t.Errorf("Expected Content-Type application/json, got %s", contentType)
-		}
-
-		var festivals []Festival
-		if err := json.NewDecoder(w.Body).Decode(&festivals); err != nil {
-			t.Fatalf("Failed to decode response: %v", err)
-		}
-
-		if len(festivals) != 1 {
-			t.Errorf("Expected 1 festival, got %d", len(festivals))
-		}
-
-		if festivals[0].ID != 1 {
-			t.Errorf("Expected festival ID 1, got %d", festivals[0].ID)
-		}
-	})
-
 	t.Run("sets CORS headers", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api/festivals", nil)
 		w := httptest.NewRecorder()
 
-		handler := makeFestivalsHandler(mockFestivals, "*")
+		mockDB := &MockDatabase{}
+
+		handler := makeFestivalsHandler(mockDB, "*")
 		handler(w, req)
 
 		origin := w.Header().Get("Access-Control-Allow-Origin")
@@ -125,7 +78,9 @@ func TestFestivalsHandler(t *testing.T) {
 		req := httptest.NewRequest("OPTIONS", "/api/festivals", nil)
 		w := httptest.NewRecorder()
 
-		handler := makeFestivalsHandler(mockFestivals, "*")
+		mockDB := &MockDatabase{}
+
+		handler := makeFestivalsHandler(mockDB, "*")
 		handler(w, req)
 
 		if w.Code != http.StatusOK {
@@ -138,7 +93,9 @@ func TestFestivalsHandler(t *testing.T) {
 		req.Header.Set("Origin", "http://localhost:5173")
 		w := httptest.NewRecorder()
 
-		handler := makeFestivalsHandler(mockFestivals, "http://localhost:5173")
+		mockDB := &MockDatabase{}
+
+		handler := makeFestivalsHandler(mockDB, "http://localhost:5173")
 		handler(w, req)
 
 		origin := w.Header().Get("Access-Control-Allow-Origin")
@@ -151,8 +108,9 @@ func TestFestivalsHandler(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api/festivals", nil)
 		req.Header.Set("Origin", "https://evil.com")
 		w := httptest.NewRecorder()
+		mockDB := &MockDatabase{}
 
-		handler := makeFestivalsHandler(mockFestivals, "http://localhost:5173")
+		handler := makeFestivalsHandler(mockDB, "http://localhost:5173")
 		handler(w, req)
 
 		origin := w.Header().Get("Access-Control-Allow-Origin")
@@ -166,12 +124,28 @@ func TestFestivalsHandler(t *testing.T) {
 		req.Header.Set("Origin", "http://localhost:3000")
 		w := httptest.NewRecorder()
 
-		handler := makeFestivalsHandler(mockFestivals, "http://localhost:5173,http://localhost:3000")
+		mockDB := &MockDatabase{}
+
+		handler := makeFestivalsHandler(mockDB, "http://localhost:5173,http://localhost:3000")
+
 		handler(w, req)
 
 		origin := w.Header().Get("Access-Control-Allow-Origin")
 		if origin != "http://localhost:3000" {
 			t.Errorf("Expected CORS origin http://localhost:3000, got %s", origin)
+		}
+	})
+
+	t.Run("handles GET request", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/api/festivals", nil)
+		w := httptest.NewRecorder()
+		mockDB := &MockDatabase{}
+
+		handler := makeFestivalsHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
 		}
 	})
 }
@@ -246,8 +220,10 @@ func TestEnableCORS(t *testing.T) {
 }
 
 type MockDatabase struct {
-	loginFunc       func(email, password string) (*LoginResponse, error)
-	verifyTokenFunc func(token string) (*User, error)
+	loginFunc                  func(email, password string) (*LoginResponse, error)
+	verifyTokenFunc            func(token string) (*User, error)
+	getFestivalsFunc           func() ([]Festival, error)
+	getBreweriesByFestivalFunc func(festivalID string) ([]Brewery, error)
 }
 
 func (m *MockDatabase) Login(email, password string) (*LoginResponse, error) {
@@ -265,6 +241,16 @@ func (m *MockDatabase) VerifyToken(token string) (*User, error) {
 }
 
 func (m *MockDatabase) GetFestivals() ([]Festival, error) {
+	if m.getFestivalsFunc != nil {
+		return m.getFestivalsFunc()
+	}
+	return nil, nil
+}
+
+func (m *MockDatabase) GetBreweriesByFestival(festivalID string) ([]Brewery, error) {
+	if m.getBreweriesByFestivalFunc != nil {
+		return m.getBreweriesByFestivalFunc(festivalID)
+	}
 	return nil, nil
 }
 
@@ -558,4 +544,193 @@ type DatabaseError struct {
 
 func (e *DatabaseError) Error() string {
 	return e.Message
+}
+
+func TestBreweriesHandler(t *testing.T) {
+	t.Run("returns breweries for a festival", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getBreweriesByFestivalFunc: func(festivalID string) ([]Brewery, error) {
+				if festivalID == "1" {
+					return []Brewery{
+						{
+							ID:          1,
+							Name:        "Test Brewery",
+							Description: "A test brewery",
+							City:        "Paris",
+							Website:     "https://example.com",
+							Logo:        "https://example.com/logo.png",
+						},
+					}, nil
+				}
+				return nil, &DatabaseError{Message: "festival not found"}
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/festivals/1/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var breweries []Brewery
+		if err := json.NewDecoder(w.Body).Decode(&breweries); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if len(breweries) != 1 {
+			t.Errorf("Expected 1 brewery, got %d", len(breweries))
+		}
+
+		if breweries[0].Name != "Test Brewery" {
+			t.Errorf("Expected brewery name 'Test Brewery', got %s", breweries[0].Name)
+		}
+	})
+
+	t.Run("returns error for invalid festival ID", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getBreweriesByFestivalFunc: func(festivalID string) ([]Brewery, error) {
+				return nil, &DatabaseError{Message: "festival not found"}
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/festivals/999/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status 500, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 for missing festival ID", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("GET", "/api/festivals//breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 405 on non-GET request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("POST", "/api/festivals/1/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("Expected status 405, got %d", w.Code)
+		}
+	})
+
+	t.Run("handles OPTIONS request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("OPTIONS", "/api/festivals/1/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
+}
+
+func TestFestivalsHandlerWithDB(t *testing.T) {
+	mockFestivals := []Festival{
+		{
+			ID:          1,
+			Name:        "Test Festival",
+			Description: "A test festival",
+			StartDate:   time.Date(2025, 10, 1, 0, 0, 0, 0, time.UTC),
+			EndDate:     time.Date(2025, 10, 3, 0, 0, 0, 0, time.UTC),
+			City:        "Paris",
+			Region:      "Île-de-France",
+			Location: Location{
+				Latitude:  48.8566,
+				Longitude: 2.3522,
+			},
+			Image:        "https://example.com/image.jpg",
+			Website:      "https://example.com",
+			BreweryCount: 50,
+		},
+	}
+
+	t.Run("returns festivals from database", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getFestivalsFunc: func() ([]Festival, error) {
+				return mockFestivals, nil
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/festivals", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeFestivalsHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var festivals []Festival
+		if err := json.NewDecoder(w.Body).Decode(&festivals); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if len(festivals) != 1 {
+			t.Errorf("Expected 1 festival, got %d", len(festivals))
+		}
+
+		if festivals[0].Name != "Test Festival" {
+			t.Errorf("Expected festival name 'Test Festival', got %s", festivals[0].Name)
+		}
+	})
+
+	t.Run("returns error when database fails", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getFestivalsFunc: func() ([]Festival, error) {
+				return nil, &DatabaseError{Message: "database error"}
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/festivals", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeFestivalsHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status 500, got %d", w.Code)
+		}
+	})
+
+	t.Run("handles OPTIONS request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("OPTIONS", "/api/festivals", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeFestivalsHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
 }

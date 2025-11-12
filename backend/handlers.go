@@ -35,25 +35,7 @@ func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func makeFestivalsHandler(festivals []Festival, allowedOrigins string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		enableCORS(w, r, allowedOrigins)
-
-		if r.Method == "OPTIONS" {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		w.Header().Set(HeaderContentType, ContentTypeJSON)
-		if err := json.NewEncoder(w).Encode(festivals); err != nil {
-			log.Printf("Error encoding festivals: %v", err)
-			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
-			return
-		}
-	}
-}
-
-func makeFestivalsHandlerWithDB(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+func makeFestivalsHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		enableCORS(w, r, allowedOrigins)
 
@@ -167,5 +149,43 @@ func makeVerifyHandler(db DatabaseInterface, allowedOrigins string) http.Handler
 			Valid: true,
 			User:  user,
 		})
+	}
+}
+
+func makeBreweriesHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != "GET" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		festivalID := strings.TrimPrefix(r.URL.Path, FestivalsBreweriesPath)
+		festivalID = strings.TrimSuffix(festivalID, "/breweries")
+
+		if festivalID == "" {
+			http.Error(w, "Festival ID is required", http.StatusBadRequest)
+			return
+		}
+
+		breweries, err := db.GetBreweriesByFestival(festivalID)
+		if err != nil {
+			log.Printf("Error fetching breweries for festival %s: %v", festivalID, err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		if err := json.NewEncoder(w).Encode(breweries); err != nil {
+			log.Printf("Error encoding breweries: %v", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
 	}
 }

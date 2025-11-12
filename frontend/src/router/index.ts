@@ -4,12 +4,18 @@ import { useAuth } from '@/services/auth'
 import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import Admin from '@/views/Admin.vue'
+import FestivalDetail from '@/views/FestivalDetail.vue'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Home',
     component: Home,
+  },
+  {
+    path: '/festival/:id',
+    name: 'FestivalDetail',
+    component: FestivalDetail,
   },
   {
     path: '/login',

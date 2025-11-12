@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { NextFestival } from '@/components/NextFestival'
 import { FestivalMap } from '@/components/FestivalMap'
 import { FestivalList } from '@/components/FestivalList'
@@ -25,24 +26,14 @@ import { useFestivals } from '@/composables/useFestivals'
 import type { Festival } from '@/types'
 
 const { nextFestival, sortedFestivals, loading, fetchFestivals } = useFestivals()
+const router = useRouter()
 
 onMounted(() => {
   fetchFestivals()
 })
 
 const handlePopupClick = (festival: Festival) => {
-  const festivalElement = document.getElementById(`festival-${festival.id}`)
-  if (festivalElement) {
-    festivalElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-    })
-
-    festivalElement.classList.add('highlight-festival')
-    setTimeout(() => {
-      festivalElement.classList.remove('highlight-festival')
-    }, 2000)
-  }
+  router.push(`/festival/${festival.id}`)
 }
 </script>
 

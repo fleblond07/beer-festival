@@ -56,7 +56,7 @@ export function useFestivals() {
     return festivals.value.filter(festival => festival.region === region)
   }
 
-  const getFestivalById = (id: string): Festival | undefined => {
+  const getFestivalById = (id: number): Festival | undefined => {
     return festivals.value.find(festival => festival.id === id)
   }
 

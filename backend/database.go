@@ -139,3 +139,39 @@ func (db *Database) VerifyToken(token string) (*User, error) {
 		Email: userResp.Email,
 	}, nil
 }
+
+func (db *Database) GetBreweriesByFestival(festivalID string) ([]Brewery, error) {
+	type FestivalBreweryWithBrewery struct {
+		BreweryID int64     `json:"brewery_id"`
+		Breweries BreweryDB `json:"breweries"`
+	}
+
+	var festivalBreweries []FestivalBreweryWithBrewery
+
+	_, err := db.client.From("festivals_breweries").
+		Select("brewery_id, breweries(*)", "", false).
+		Eq("festival_id", festivalID).
+		ExecuteTo(&festivalBreweries)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch breweries: %w", err)
+	}
+
+	if len(festivalBreweries) == 0 {
+		return []Brewery{}, nil
+	}
+
+	breweries := make([]Brewery, len(festivalBreweries))
+	for index, brewery := range festivalBreweries {
+		breweries[index] = Brewery{
+			ID:          brewery.Breweries.ID,
+			Name:        brewery.Breweries.Name,
+			Description: brewery.Breweries.Description,
+			City:        brewery.Breweries.City,
+			Website:     brewery.Breweries.Website,
+			Logo:        brewery.Breweries.Logo,
+		}
+	}
+
+	return breweries, nil
+}

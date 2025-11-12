@@ -9,8 +9,9 @@
       </p>
 
       <div
-        class="next-festival-hero bg-gradient-to-r from-accent-purple to-accent-pink rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02] border border-accent-purple/30"
+        class="next-festival-hero bg-gradient-to-r from-accent-purple to-accent-pink rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-300 hover:scale-[1.02] border border-accent-purple/30 cursor-pointer"
         data-testid="hero-card"
+        @click="navigateToDetail"
       >
         <div class="md:flex">
           <div
@@ -88,6 +89,7 @@
                 rel="noopener noreferrer"
                 class="bg-dark-card text-white px-6 py-3 rounded-lg font-bold hover:bg-accent-cyan transition-colors border border-white/30"
                 data-testid="website-link"
+                @click.stop
               >
                 En savoir plus →
               </a>
@@ -147,6 +149,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Festival } from '@/types'
 import { formatDateRange, getDaysUntilText } from '@/services/dateUtils'
 
@@ -156,6 +159,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const router = useRouter()
 
 const formattedDateRange = computed(() => {
   if (!props.festival) return ''
@@ -166,4 +170,10 @@ const countdownText = computed(() => {
   if (!props.festival) return ''
   return getDaysUntilText(props.festival.startDate)
 })
+
+const navigateToDetail = () => {
+  if (props.festival) {
+    router.push(`/festival/${props.festival.id}`)
+  }
+}
 </script>
