@@ -54,25 +54,6 @@ func TestGetConfig(t *testing.T) {
 }
 
 func TestFestivalsHandler(t *testing.T) {
-	mockFestivals := []Festival{
-		{
-			ID:          1,
-			Name:        "Test Festival",
-			Description: "A test festival",
-			StartDate:   time.Date(2025, 10, 1, 0, 0, 0, 0, time.UTC),
-			EndDate:     time.Date(2025, 10, 3, 0, 0, 0, 0, time.UTC),
-			City:        "Paris",
-			Region:      "Île-de-France",
-			Location: Location{
-				Latitude:  48.8566,
-				Longitude: 2.3522,
-			},
-			Image:        "https://example.com/image.jpg",
-			Website:      "https://example.com",
-			BreweryCount: 50,
-		},
-	}
-
 	t.Run("sets CORS headers", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api/festivals", nil)
 		w := httptest.NewRecorder()

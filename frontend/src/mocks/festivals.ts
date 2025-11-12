@@ -2,7 +2,7 @@ import type { Festival } from '@/types'
 
 export const mockFestivals: Festival[] = [
   {
-    id: '1',
+    id: 1,
     name: 'Paris Beer Week',
     description:
       'La plus grande célébration de la bière artisanale à Paris avec plus de 100 brasseries.',
@@ -19,7 +19,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 120,
   },
   {
-    id: '2',
+    id: 2,
     name: 'Festival de la Bière de Strasbourg',
     description: 'Le festival emblématique de bière alsacienne et européenne.',
     startDate: '2026-10-20',
@@ -35,7 +35,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 85,
   },
   {
-    id: '3',
+    id: 3,
     name: 'Lyon Beer Festival',
     description: 'Festival innovant mettant en avant les brasseries artisanales françaises.',
     startDate: '2026-12-05',
@@ -51,7 +51,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 65,
   },
   {
-    id: '4',
+    id: 4,
     name: 'Bordeaux Craft Beer Fest',
     description: 'Dégustation de bières artisanales dans la capitale du vin.',
     startDate: '2027-03-12',
@@ -67,7 +67,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 50,
   },
   {
-    id: '5',
+    id: 5,
     name: 'Lille Bière Festival',
     description: 'Le festival du nord de la France célébrant les bières belges et françaises.',
     startDate: '2027-01-18',
@@ -83,7 +83,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 70,
   },
   {
-    id: '6',
+    id: 6,
     name: 'Marseille Beer & Sea',
     description: 'Festival de bière avec vue sur la Méditerranée.',
     startDate: '2027-05-08',
@@ -99,7 +99,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 45,
   },
   {
-    id: '7',
+    id: 7,
     name: 'Toulouse Hop Festival',
     description: 'Célébration du houblon et des IPA dans la ville rose.',
     startDate: '2027-04-02',
@@ -115,7 +115,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 55,
   },
   {
-    id: '8',
+    id: 8,
     name: 'Nantes Brasseurs Festival',
     description: "Rencontre des meilleurs brasseurs de l'ouest de la France.",
     startDate: '2027-02-20',
@@ -131,7 +131,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 60,
   },
   {
-    id: '9',
+    id: 9,
     name: 'Rennes Beer Week',
     description: 'Une semaine dédiée à la découverte des bières bretonnes et internationales.',
     startDate: '2026-10-08',
@@ -147,7 +147,7 @@ export const mockFestivals: Festival[] = [
     breweryCount: 75,
   },
   {
-    id: '10',
+    id: 10,
     name: 'Nice Mediterranean Beer Festival',
     description: "Festival de bière sur la Côte d'Azur.",
     startDate: '2027-06-18',
