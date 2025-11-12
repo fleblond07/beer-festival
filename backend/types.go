@@ -40,6 +40,24 @@ type FestivalBrewery struct {
 	BreweryID  int64 `json:"brewery_id"`
 }
 
+type Brewery struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	City        string `json:"city"`
+	Website     string `json:"website"`
+	Logo        string `json:"logo"`
+}
+
+type BreweryDB struct {
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	City        string `json:"city"`
+	Website     string `json:"website"`
+	Logo        string `json:"logo"`
+}
+
 type Config struct {
 	Port           string
 	AllowedOrigins string
@@ -73,4 +91,5 @@ type DatabaseInterface interface {
 	Login(email, password string) (*LoginResponse, error)
 	VerifyToken(token string) (*User, error)
 	GetFestivals() ([]Festival, error)
+	GetBreweriesByFestival(festivalID string) ([]Brewery, error)
 }

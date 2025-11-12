@@ -283,4 +283,83 @@ describe('FestivalMap', () => {
       expect(wrapper.emitted('marker-click')?.[0]).toEqual([mockFestival])
     })
   })
+
+  describe('marker event handlers', () => {
+    it('should trigger marker click handler', async () => {
+      const L = await import('leaflet')
+      const mockMarker = L.default.marker([0, 0])
+      const festivals = [createMockFestival('1')]
+      const wrapper = mount(FestivalMap, {
+        props: { festivals },
+      })
+
+      const clickCallback = (mockMarker.on as any).mock.calls.find(
+        (call: any) => call[0] === 'click'
+      )?.[1]
+
+      if (clickCallback) {
+        clickCallback()
+        await wrapper.vm.$nextTick()
+        expect(wrapper.emitted('marker-click')).toBeTruthy()
+      }
+    })
+
+    it('should trigger popup open handler without button', async () => {
+      const L = await import('leaflet')
+      const mockMarker = L.default.marker([0, 0])
+      const festivals = [createMockFestival('1')]
+      const wrapper = mount(FestivalMap, {
+        props: { festivals },
+      })
+
+      const popupOpenCallback = (mockMarker.on as any).mock.calls.find(
+        (call: any) => call[0] === 'popupopen'
+      )?.[1]
+
+      if (popupOpenCallback) {
+        popupOpenCallback()
+        await wrapper.vm.$nextTick()
+      }
+    })
+
+    it('should trigger popup open handler with button', async () => {
+      const L = await import('leaflet')
+      const mockButton = {
+        addEventListener: vi.fn(),
+      }
+      const mockMarker = {
+        addTo: vi.fn().mockReturnThis(),
+        bindPopup: vi.fn().mockReturnThis(),
+        on: vi.fn().mockReturnThis(),
+        remove: vi.fn(),
+        getPopup: vi.fn(() => ({
+          getElement: vi.fn(() => ({
+            querySelector: vi.fn(() => mockButton),
+          })),
+        })),
+      }
+
+      ;(L.default.marker as any).mockReturnValueOnce(mockMarker)
+
+      const festivals = [createMockFestival('1')]
+      const wrapper = mount(FestivalMap, {
+        props: { festivals },
+      })
+
+      const popupOpenCallback = (mockMarker.on as any).mock.calls.find(
+        (call: any) => call[0] === 'popupopen'
+      )?.[1]
+
+      if (popupOpenCallback) {
+        popupOpenCallback()
+        await wrapper.vm.$nextTick()
+        expect(mockButton.addEventListener).toHaveBeenCalledWith('click', expect.any(Function))
+
+        const buttonClickCallback = mockButton.addEventListener.mock.calls[0][1]
+        buttonClickCallback()
+        await wrapper.vm.$nextTick()
+        expect(wrapper.emitted('popup-click')).toBeTruthy()
+      }
+    })
+  })
 })

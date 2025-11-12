@@ -3,7 +3,7 @@
     :id="`festival-${festival.id}`"
     class="festival-card bg-dark-card rounded-lg shadow-lg overflow-hidden hover:shadow-2xl hover:shadow-accent-cyan/20 transition-all duration-300 cursor-pointer border border-dark-lighter"
     data-testid="festival-card"
-    @click="$emit('click', festival)"
+    @click="navigateToDetail"
   >
     <div v-if="festival.image" class="h-48 overflow-hidden">
       <img
@@ -108,6 +108,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import type { Festival } from '@/types'
 import { formatDateRange, getDaysUntilText, isUpcoming } from '@/services/dateUtils'
 
@@ -120,9 +121,7 @@ const props = withDefaults(defineProps<Props>(), {
   showStatus: true,
 })
 
-defineEmits<{
-  (_e: 'click', _festival: Festival): void
-}>()
+const router = useRouter()
 
 const formattedDateRange = computed(() =>
   formatDateRange(props.festival.startDate, props.festival.endDate)
@@ -136,6 +135,10 @@ const statusClass = computed(() => {
   }
   return 'bg-gray-700 text-gray-200'
 })
+
+const navigateToDetail = () => {
+  router.push(`/festival/${props.festival.id}`)
+}
 </script>
 
 <style scoped>

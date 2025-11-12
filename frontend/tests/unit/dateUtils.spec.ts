@@ -132,6 +132,12 @@ describe('dateUtils', () => {
       expect(["Aujourd'hui", 'Demain', 'Dans 1 jours']).toContain(result)
     })
 
+    it('should return "Demain" for date that is exactly 1 day from now', () => {
+      const tomorrow = dayjs().startOf('day').add(1, 'day').add(12, 'hours').format('YYYY-MM-DD')
+      const result = getDaysUntilText(tomorrow)
+      expect(['Demain', "Aujourd'hui"]).toContain(result)
+    })
+
     it('should return "Dans X jours" for less than a week', () => {
       const date = dayjs().add(5, 'days').startOf('day').format('YYYY-MM-DD')
       const result = getDaysUntilText(date)

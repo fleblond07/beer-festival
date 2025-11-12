@@ -1,11 +1,18 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import NextFestival from '@/components/NextFestival/NextFestival.vue'
 import type { Festival } from '@/types'
 import dayjs from 'dayjs'
 
+const mockPush = vi.fn()
+vi.mock('vue-router', () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
+}))
+
 const createMockFestival = (overrides?: Partial<Festival>): Festival => ({
-  id: '1',
+  id: 1,
   name: 'Test Festival',
   description: 'A great beer festival in the heart of France',
   startDate: dayjs().add(10, 'days').format('YYYY-MM-DD'),
@@ -259,6 +266,28 @@ describe('NextFestival', () => {
       })
 
       expect(wrapper.find('[data-testid="next-festival-container"]').exists()).toBe(true)
+    })
+  })
+
+  describe('navigation', () => {
+    it('should navigate to festival detail when hero card is clicked', async () => {
+      const festival = createMockFestival({ id: 123 })
+      const wrapper = mount(NextFestival, {
+        props: { festival, loading: false },
+      })
+
+      const heroCard = wrapper.find('[data-testid="hero-card"]')
+      await heroCard.trigger('click')
+
+      expect(mockPush).toHaveBeenCalledWith('/festival/123')
+    })
+
+    it('should not navigate when festival is null', async () => {
+      const wrapper = mount(NextFestival, {
+        props: { festival: null, loading: false },
+      })
+
+      expect(wrapper.find('[data-testid="hero-card"]').exists()).toBe(false)
     })
   })
 })

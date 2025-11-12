@@ -1,5 +1,5 @@
 export interface Festival {
-  id: string
+  id: number
   name: string
   description: string
   startDate: string

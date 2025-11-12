@@ -14,11 +14,12 @@ const (
 	CORSMethods = "GET, POST, OPTIONS"
 	CORSHeaders = "Content-Type, Authorization"
 
-	APIBasePath   = "/api/v1"
-	HealthPath    = "/health"
-	FestivalsPath = "/api/festivals"
-	LoginPath     = "/api/auth/login"
-	VerifyPath    = "/api/auth/verify"
+	APIBasePath            = "/api/v1"
+	HealthPath             = "/health"
+	FestivalsPath          = "/api/festivals"
+	LoginPath              = "/api/auth/login"
+	VerifyPath             = "/api/auth/verify"
+	FestivalsBreweriesPath = "/api/festivals/"
 
 	AppVersion = "1.0.0"
 
