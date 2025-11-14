@@ -33,7 +33,7 @@
     "@vitest/ui": "4.0.8",
     "@vue/test-utils": "2.4.6",
     "@vue/tsconfig": "0.8.1",
-    "autoprefixer": "10.4.21",
+    "autoprefixer": "10.4.22",
     "eslint": "9.39.1",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.4",
