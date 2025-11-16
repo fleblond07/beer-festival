@@ -17,6 +17,7 @@ const (
 	APIBasePath            = "/api/v1"
 	HealthPath             = "/health"
 	FestivalsPath          = "/api/festivals"
+	CreateFestivalPath     = "/api/festivals/create"
 	LoginPath              = "/api/auth/login"
 	VerifyPath             = "/api/auth/verify"
 	FestivalsBreweriesPath = "/api/festivals/"

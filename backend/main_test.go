@@ -224,6 +224,7 @@ type MockDatabase struct {
 	verifyTokenFunc            func(token string) (*User, error)
 	getFestivalsFunc           func() ([]Festival, error)
 	getBreweriesByFestivalFunc func(festivalID string) ([]Brewery, error)
+	createFestivalFunc         func(festival *FestivalDB) (*FestivalDB, error)
 }
 
 func (m *MockDatabase) Login(email, password string) (*LoginResponse, error) {
@@ -250,6 +251,13 @@ func (m *MockDatabase) GetFestivals() ([]Festival, error) {
 func (m *MockDatabase) GetBreweriesByFestival(festivalID string) ([]Brewery, error) {
 	if m.getBreweriesByFestivalFunc != nil {
 		return m.getBreweriesByFestivalFunc(festivalID)
+	}
+	return nil, nil
+}
+
+func (m *MockDatabase) CreateFestival(festival *FestivalDB) (*FestivalDB, error) {
+	if m.createFestivalFunc != nil {
+		return m.createFestivalFunc(festival)
 	}
 	return nil, nil
 }
