@@ -189,3 +189,65 @@ func makeBreweriesHandler(db DatabaseInterface, allowedOrigins string) http.Hand
 		}
 	}
 }
+
+func makeCreateFestivalHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != "POST" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Authorization header required", http.StatusUnauthorized)
+			return
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		if token == authHeader {
+			http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
+			return
+		}
+
+		_, err := db.VerifyToken(token)
+		if err != nil {
+			log.Printf("Token verification failed: %v", err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		var festival FestivalDB
+		if err := json.NewDecoder(r.Body).Decode(&festival); err != nil {
+			log.Printf("Error decoding request body: %v", err)
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		if festival.Name == "" || festival.StartDate == "" || festival.EndDate == "" {
+			http.Error(w, "Name, start_date, and end_date are required", http.StatusBadRequest)
+			return
+		}
+
+		createdFestival, err := db.CreateFestival(&festival)
+		if err != nil {
+			log.Printf("Error creating festival: %v", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		w.WriteHeader(http.StatusCreated)
+		if err := json.NewEncoder(w).Encode(createdFestival); err != nil {
+			log.Printf("Error encoding created festival: %v", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+	}
+}
