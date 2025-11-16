@@ -23,7 +23,6 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc(HealthPath, healthCheckHandler)
 	mux.HandleFunc(FestivalsPath, makeFestivalsHandler(db, config.AllowedOrigins))
-	mux.HandleFunc(CreateFestivalPath, makeCreateFestivalHandler(db, config.AllowedOrigins))
 	mux.HandleFunc(FestivalsBreweriesPath, makeBreweriesHandler(db, config.AllowedOrigins))
 	mux.HandleFunc(LoginPath, makeLoginHandler(db, config.AllowedOrigins))
 	mux.HandleFunc(VerifyPath, makeVerifyHandler(db, config.AllowedOrigins))

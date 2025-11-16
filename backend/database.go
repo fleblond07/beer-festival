@@ -175,20 +175,3 @@ func (db *Database) GetBreweriesByFestival(festivalID string) ([]Brewery, error)
 
 	return breweries, nil
 }
-
-func (db *Database) CreateFestival(festival *FestivalDB) (*FestivalDB, error) {
-	var result []FestivalDB
-	_, err := db.client.From("festivals").
-		Insert(festival, false, "", "", "").
-		ExecuteTo(&result)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed to create festival: %w", err)
-	}
-
-	if len(result) == 0 {
-		return nil, fmt.Errorf("no festival returned after creation")
-	}
-
-	return &result[0], nil
-}

@@ -92,5 +92,4 @@ type DatabaseInterface interface {
 	VerifyToken(token string) (*User, error)
 	GetFestivals() ([]Festival, error)
 	GetBreweriesByFestival(festivalID string) ([]Brewery, error)
-	CreateFestival(festival *FestivalDB) (*FestivalDB, error)
 }
