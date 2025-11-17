@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -739,6 +740,336 @@ func TestFestivalsHandlerWithDB(t *testing.T) {
 
 		if w.Code != http.StatusOK {
 			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
+}
+
+func TestCreateFestivalHandler(t *testing.T) {
+	t.Run("creates festival successfully", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				if token == "valid-token" {
+					return &User{
+						ID:    "user-123",
+						Email: "test@example.com",
+					}, nil
+				}
+				return nil, &DatabaseError{Message: "invalid token"}
+			},
+			createFestivalFunc: func(festival *FestivalDB) (*FestivalDB, error) {
+				festival.ID = 1
+				return festival, nil
+			},
+		}
+
+		body := []byte(`{
+			"name": "Test Festival",
+			"description": "A test festival",
+			"start_date": "2025-10-01",
+			"end_date": "2025-10-03",
+			"city": "Paris",
+			"region": "Île-de-France",
+			"latitude": 48.8566,
+			"longitude": 2.3522,
+			"image": "https://example.com/image.jpg",
+			"website": "https://example.com"
+		}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusCreated {
+			t.Errorf("Expected status 201, got %d", w.Code)
+		}
+
+		var response FestivalDB
+		if err := json.NewDecoder(w.Body).Decode(&response); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if response.Name != "Test Festival" {
+			t.Errorf("Expected festival name 'Test Festival', got %s", response.Name)
+		}
+
+		if response.ID != 1 {
+			t.Errorf("Expected festival ID 1, got %d", response.ID)
+		}
+	})
+
+	t.Run("returns 401 when authorization header is missing", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		body := []byte(`{"name":"Test Festival","start_date":"2025-10-01","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("Expected status 401, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 401 when authorization format is invalid", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		body := []byte(`{"name":"Test Festival","start_date":"2025-10-01","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "invalid-format")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("Expected status 401, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 401 when token is invalid", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return nil, &DatabaseError{Message: "invalid token"}
+			},
+		}
+
+		body := []byte(`{"name":"Test Festival","start_date":"2025-10-01","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer invalid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("Expected status 401, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 405 on non-POST request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("GET", "/api/festivals", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("Expected status 405, got %d", w.Code)
+		}
+	})
+
+	t.Run("handles OPTIONS request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("OPTIONS", "/api/festivals", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 when request body is invalid", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+		}
+
+		body := []byte(`invalid json`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 when name is missing", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+		}
+
+		body := []byte(`{"start_date":"2025-10-01","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 when start_date is missing", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+		}
+
+		body := []byte(`{"name":"Test Festival","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 when end_date is missing", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+		}
+
+		body := []byte(`{"name":"Test Festival","start_date":"2025-10-01"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 400 when start_date format is invalid", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+		}
+
+		body := []byte(`{"name":"Test Festival","start_date":"10/01/2025","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+
+		bodyText := w.Body.String()
+		if !strings.Contains(bodyText, "Invalid start_date format") {
+			t.Errorf("Expected error message about invalid start_date format, got %s", bodyText)
+		}
+	})
+
+	t.Run("returns 400 when end_date format is invalid", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+		}
+
+		body := []byte(`{"name":"Test Festival","start_date":"2025-10-01","end_date":"10/03/2025"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+
+		bodyText := w.Body.String()
+		if !strings.Contains(bodyText, "Invalid end_date format") {
+			t.Errorf("Expected error message about invalid end_date format, got %s", bodyText)
+		}
+	})
+
+	t.Run("returns 500 when database fails to create festival", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+			createFestivalFunc: func(festival *FestivalDB) (*FestivalDB, error) {
+				return nil, &DatabaseError{Message: "database error"}
+			},
+		}
+
+		body := []byte(`{"name":"Test Festival","start_date":"2025-10-01","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status 500, got %d", w.Code)
+		}
+	})
+
+	t.Run("sets CORS headers", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			verifyTokenFunc: func(token string) (*User, error) {
+				return &User{ID: "user-123", Email: "test@example.com"}, nil
+			},
+			createFestivalFunc: func(festival *FestivalDB) (*FestivalDB, error) {
+				festival.ID = 1
+				return festival, nil
+			},
+		}
+
+		body := []byte(`{"name":"Test Festival","start_date":"2025-10-01","end_date":"2025-10-03"}`)
+		req := httptest.NewRequest("POST", "/api/festivals", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("Authorization", "Bearer valid-token")
+		w := httptest.NewRecorder()
+
+		handler := makeCreateFestivalHandler(mockDB, "*")
+		handler(w, req)
+
+		origin := w.Header().Get("Access-Control-Allow-Origin")
+		if origin != "*" {
+			t.Errorf("Expected CORS origin *, got %s", origin)
+		}
+
+		methods := w.Header().Get("Access-Control-Allow-Methods")
+		if methods != "GET, POST, OPTIONS" {
+			t.Errorf("Expected CORS methods 'GET, POST, OPTIONS', got %s", methods)
 		}
 	})
 }
