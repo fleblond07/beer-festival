@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func enableCORS(w http.ResponseWriter, r *http.Request, allowedOrigins string) {
@@ -184,6 +185,80 @@ func makeBreweriesHandler(db DatabaseInterface, allowedOrigins string) http.Hand
 		w.Header().Set(HeaderContentType, ContentTypeJSON)
 		if err := json.NewEncoder(w).Encode(breweries); err != nil {
 			log.Printf("Error encoding breweries: %v", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func makeCreateFestivalHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != "POST" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Authorization header required", http.StatusUnauthorized)
+			return
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		if token == authHeader {
+			http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
+			return
+		}
+
+		_, err := db.VerifyToken(token)
+		if err != nil {
+			log.Printf("Token verification failed: %v", err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		var festival FestivalDB
+		if err := json.NewDecoder(r.Body).Decode(&festival); err != nil {
+			log.Printf("Error decoding request body: %v", err)
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		if festival.Name == "" || festival.StartDate == "" || festival.EndDate == "" {
+			http.Error(w, "Name, start_date, and end_date are required", http.StatusBadRequest)
+			return
+		}
+
+		_, err = time.Parse("2006-01-02", festival.StartDate)
+		if err != nil {
+			http.Error(w, "Invalid start_date format. Expected YYYY-MM-DD", http.StatusBadRequest)
+			return
+		}
+
+		_, err = time.Parse("2006-01-02", festival.EndDate)
+		if err != nil {
+			http.Error(w, "Invalid end_date format. Expected YYYY-MM-DD", http.StatusBadRequest)
+			return
+		}
+
+		createdFestival, err := db.CreateFestival(&festival)
+		if err != nil {
+			log.Printf("Error creating festival: %v", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		w.WriteHeader(http.StatusCreated)
+		if err := json.NewEncoder(w).Encode(createdFestival); err != nil {
+			log.Printf("Error encoding created festival: %v", err)
 			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
 			return
 		}
