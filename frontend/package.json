@@ -30,7 +30,7 @@
     "@typescript-eslint/parser": "8.47.0",
     "@vitejs/plugin-vue": "6.0.2",
     "@vitest/coverage-v8": "4.0.10",
-    "@vitest/ui": "4.0.10",
+    "@vitest/ui": "4.0.12",
     "@vue/test-utils": "2.4.6",
     "@vue/tsconfig": "0.8.1",
     "autoprefixer": "10.4.22",
