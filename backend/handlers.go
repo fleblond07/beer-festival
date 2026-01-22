@@ -153,7 +153,7 @@ func makeVerifyHandler(db DatabaseInterface, allowedOrigins string) http.Handler
 	}
 }
 
-func makeBreweriesHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+func makeFestivalBreweriesHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		enableCORS(w, r, allowedOrigins)
 
@@ -191,6 +191,35 @@ func makeBreweriesHandler(db DatabaseInterface, allowedOrigins string) http.Hand
 	}
 }
 
+func makeBreweriesHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != "GET" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		breweries, err := db.GetBreweries()
+		if err != nil {
+			log.Printf("Error fetching breweries %s", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		if err := json.NewEncoder(w).Encode(breweries); err != nil {
+			log.Printf("Error encoding breweries: %v", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+	}
+}
 func makeCreateFestivalHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		enableCORS(w, r, allowedOrigins)
