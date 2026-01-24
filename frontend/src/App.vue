@@ -19,6 +19,14 @@
               </p>
             </div>
           </router-link>
+          <nav class="flex space-x-6">
+            <router-link
+              to="/brasseries"
+              class="text-white hover:text-accent-cyan transition-colors font-medium"
+            >
+              Brasseries
+            </router-link>
+          </nav>
         </div>
       </div>
     </header>

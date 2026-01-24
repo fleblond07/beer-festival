@@ -225,6 +225,7 @@ type MockDatabase struct {
 	verifyTokenFunc            func(token string) (*User, error)
 	getFestivalsFunc           func() ([]Festival, error)
 	getBreweriesByFestivalFunc func(festivalID string) ([]Brewery, error)
+	getBreweriesFunc func() ([]Brewery, error)
 	createFestivalFunc         func(festival *FestivalDB) (*FestivalDB, error)
 }
 
@@ -245,6 +246,13 @@ func (m *MockDatabase) VerifyToken(token string) (*User, error) {
 func (m *MockDatabase) GetFestivals() ([]Festival, error) {
 	if m.getFestivalsFunc != nil {
 		return m.getFestivalsFunc()
+	}
+	return nil, nil
+}
+
+func (m *MockDatabase) GetBreweries() ([]Brewery, error) {
+	if m.getBreweriesFunc != nil {
+		return m.getBreweriesFunc()
 	}
 	return nil, nil
 }
@@ -578,7 +586,7 @@ func TestBreweriesHandler(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api/festivals/1/breweries", nil)
 		w := httptest.NewRecorder()
 
-		handler := makeBreweriesHandler(mockDB, "*")
+		handler := makeFestivalBreweriesHandler(mockDB, "*")
 		handler(w, req)
 
 		if w.Code != http.StatusOK {
@@ -609,7 +617,7 @@ func TestBreweriesHandler(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api/festivals/999/breweries", nil)
 		w := httptest.NewRecorder()
 
-		handler := makeBreweriesHandler(mockDB, "*")
+		handler := makeFestivalBreweriesHandler(mockDB, "*")
 		handler(w, req)
 
 		if w.Code != http.StatusInternalServerError {
@@ -623,7 +631,7 @@ func TestBreweriesHandler(t *testing.T) {
 		req := httptest.NewRequest("GET", "/api/festivals//breweries", nil)
 		w := httptest.NewRecorder()
 
-		handler := makeBreweriesHandler(mockDB, "*")
+		handler := makeFestivalBreweriesHandler(mockDB, "*")
 		handler(w, req)
 
 		if w.Code != http.StatusBadRequest {
@@ -637,7 +645,7 @@ func TestBreweriesHandler(t *testing.T) {
 		req := httptest.NewRequest("POST", "/api/festivals/1/breweries", nil)
 		w := httptest.NewRecorder()
 
-		handler := makeBreweriesHandler(mockDB, "*")
+		handler := makeFestivalBreweriesHandler(mockDB, "*")
 		handler(w, req)
 
 		if w.Code != http.StatusMethodNotAllowed {
@@ -651,11 +659,162 @@ func TestBreweriesHandler(t *testing.T) {
 		req := httptest.NewRequest("OPTIONS", "/api/festivals/1/breweries", nil)
 		w := httptest.NewRecorder()
 
+		handler := makeFestivalBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
+}
+
+func TestAllBreweriesHandler(t *testing.T) {
+	t.Run("returns all breweries", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getBreweriesFunc: func() ([]Brewery, error) {
+				return []Brewery{
+					{
+						ID:          1,
+						Name:        "Test Brewery 1",
+						Description: "A test brewery",
+						City:        "Paris",
+						Website:     "https://example1.com",
+						Logo:        "https://example1.com/logo.png",
+					},
+					{
+						ID:          2,
+						Name:        "Test Brewery 2",
+						Description: "Another test brewery",
+						City:        "Lyon",
+						Website:     "https://example2.com",
+						Logo:        "https://example2.com/logo.png",
+					},
+				}, nil
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var breweries []Brewery
+		if err := json.NewDecoder(w.Body).Decode(&breweries); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if len(breweries) != 2 {
+			t.Errorf("Expected 2 breweries, got %d", len(breweries))
+		}
+
+		if breweries[0].Name != "Test Brewery 1" {
+			t.Errorf("Expected brewery name 'Test Brewery 1', got %s", breweries[0].Name)
+		}
+
+		if breweries[1].Name != "Test Brewery 2" {
+			t.Errorf("Expected brewery name 'Test Brewery 2', got %s", breweries[1].Name)
+		}
+	})
+
+	t.Run("returns error when database fails", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getBreweriesFunc: func() ([]Brewery, error) {
+				return nil, &DatabaseError{Message: "database error"}
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status 500, got %d", w.Code)
+		}
+	})
+
+	t.Run("returns 405 on non-GET request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("POST", "/api/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("Expected status 405, got %d", w.Code)
+		}
+	})
+
+	t.Run("handles OPTIONS request", func(t *testing.T) {
+		mockDB := &MockDatabase{}
+
+		req := httptest.NewRequest("OPTIONS", "/api/breweries", nil)
+		w := httptest.NewRecorder()
+
 		handler := makeBreweriesHandler(mockDB, "*")
 		handler(w, req)
 
 		if w.Code != http.StatusOK {
 			t.Errorf("Expected status 200 for OPTIONS, got %d", w.Code)
+		}
+	})
+
+	t.Run("sets CORS headers", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getBreweriesFunc: func() ([]Brewery, error) {
+				return []Brewery{}, nil
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		origin := w.Header().Get("Access-Control-Allow-Origin")
+		if origin != "*" {
+			t.Errorf("Expected CORS origin *, got %s", origin)
+		}
+
+		methods := w.Header().Get("Access-Control-Allow-Methods")
+		if methods != "GET, POST, OPTIONS" {
+			t.Errorf("Expected CORS methods 'GET, POST, OPTIONS', got %s", methods)
+		}
+	})
+
+	t.Run("returns empty array when no breweries exist", func(t *testing.T) {
+		mockDB := &MockDatabase{
+			getBreweriesFunc: func() ([]Brewery, error) {
+				return []Brewery{}, nil
+			},
+		}
+
+		req := httptest.NewRequest("GET", "/api/breweries", nil)
+		w := httptest.NewRecorder()
+
+		handler := makeBreweriesHandler(mockDB, "*")
+		handler(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var breweries []Brewery
+		if err := json.NewDecoder(w.Body).Decode(&breweries); err != nil {
+			t.Fatalf("Failed to decode response: %v", err)
+		}
+
+		if len(breweries) != 0 {
+			t.Errorf("Expected 0 breweries, got %d", len(breweries))
 		}
 	})
 }

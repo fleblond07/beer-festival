@@ -47,6 +47,7 @@ type Brewery struct {
 	City        string `json:"city"`
 	Website     string `json:"website"`
 	Logo        string `json:"logo"`
+	FestivalCount int `json:"festivalCount"`
 }
 
 type BreweryDB struct {
@@ -91,6 +92,7 @@ type DatabaseInterface interface {
 	Login(email, password string) (*LoginResponse, error)
 	VerifyToken(token string) (*User, error)
 	GetFestivals() ([]Festival, error)
+	GetBreweries() ([]Brewery, error)
 	GetBreweriesByFestival(festivalID string) ([]Brewery, error)
 	CreateFestival(festival *FestivalDB) (*FestivalDB, error)
 }

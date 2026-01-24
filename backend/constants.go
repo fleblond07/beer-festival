@@ -21,6 +21,7 @@ const (
 	LoginPath              = "/api/auth/login"
 	VerifyPath             = "/api/auth/verify"
 	FestivalsBreweriesPath = "/api/festivals/"
+	BreweriesPath = "/api/breweries"
 
 	AppVersion = "1.0.0"
 

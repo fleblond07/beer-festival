@@ -5,6 +5,7 @@ import Home from '@/views/Home.vue'
 import Login from '@/views/Login.vue'
 import Admin from '@/views/Admin.vue'
 import FestivalDetail from '@/views/FestivalDetail.vue'
+import Brasseries from '@/views/Brasseries.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -16,6 +17,11 @@ const routes: RouteRecordRaw[] = [
     path: '/festival/:id',
     name: 'FestivalDetail',
     component: FestivalDetail,
+  },
+  {
+    path: '/brasseries',
+    name: 'Brasseries',
+    component: Brasseries,
   },
   {
     path: '/login',

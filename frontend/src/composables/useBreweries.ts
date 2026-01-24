@@ -28,11 +28,32 @@ export function useBreweries() {
       loading.value = false
     }
   }
+  const fetchBreweries = async () => {
+    loading.value = true
+    error.value = null
 
+    try {
+      const response = await fetch(`${API_URL}/api/breweries`)
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch breweries')
+      }
+
+      const data = await response.json()
+      breweries.value = data
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An error occurred'
+      breweries.value = []
+    } finally {
+      loading.value = false
+    }
+    return breweries
+  }
   return {
     breweries,
     loading,
     error,
+    fetchBreweries,
     fetchBreweriesByFestival,
   }
 }

@@ -36,6 +36,11 @@ type BreweryCount struct {
 	Count      int64 `json:"count"`
 }
 
+type FestivalCount struct {
+	BreweryID int64 `json:"brewery_id"`
+	Count int64 `json:"count"`
+}
+
 func (db *Database) GetFestivals() ([]Festival, error) {
 	var festivalsDB []FestivalDB
 	_, err := db.client.From("festivals").Select("*", "", false).ExecuteTo(&festivalsDB)
@@ -90,6 +95,21 @@ func (db *Database) getBreweryCounts() (map[int64]int, error) {
 	return nil, err
 }
 
+func (db *Database) getFestivalCounts() (map[int64]int, error) {
+	var counts []FestivalCount
+	rpcResult := db.client.Rpc("get_brewery_festival_counts", "", nil)
+
+	err := json.Unmarshal([]byte(rpcResult), &counts)
+
+	if err == nil && len(counts) > 0 {
+		result := make(map[int64]int)
+		for _, c := range counts {
+			result[c.BreweryID] = int(c.Count)
+		}
+		return result, nil
+	}
+	return nil, err
+}
 func (db *Database) Login(email, password string) (*LoginResponse, error) {
 	resp, err := db.client.Auth.SignInWithEmailPassword(email, password)
 	if err != nil {
@@ -170,6 +190,34 @@ func (db *Database) GetBreweriesByFestival(festivalID string) ([]Brewery, error)
 			City:        brewery.Breweries.City,
 			Website:     brewery.Breweries.Website,
 			Logo:        brewery.Breweries.Logo,
+		}
+	}
+
+	return breweries, nil
+}
+
+func (db *Database) GetBreweries() ([]Brewery, error) {
+	var breweriesDb []BreweryDB
+	_, err := db.client.From("breweries").Select("*", "", false).ExecuteTo(&breweriesDb)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch breweries: %w", err)
+	}
+
+	festivalCounts, err := db.getFestivalCounts()
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch brewery counts: %w", err)
+	}
+
+	breweries := make([]Brewery, len(breweriesDb))
+	for i, brewery := range breweriesDb {
+		breweries[i] = Brewery{
+			ID:          brewery.ID,
+			Name:        brewery.Name,
+			Description: brewery.Description,
+			City:        brewery.City,
+			Logo:        brewery.Logo,
+			Website:      brewery.Website,
+			FestivalCount: festivalCounts[brewery.ID],
 		}
 	}
 

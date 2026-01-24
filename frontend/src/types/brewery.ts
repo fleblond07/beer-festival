@@ -5,4 +5,5 @@ export interface Brewery {
   city?: string
   website?: string
   logo?: string
+  festivalCount?: number
 }
