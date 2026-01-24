@@ -67,9 +67,7 @@ describe('useBreweries', () => {
 
       await fetchBreweries()
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/breweries')
-      )
+      expect(global.fetch).toHaveBeenCalledWith(expect.stringContaining('/api/breweries'))
       expect(breweries.value.length).toBe(3)
       expect(loading.value).toBe(false)
     })
@@ -163,9 +161,7 @@ describe('useBreweries', () => {
     })
 
     it('should handle network errors', async () => {
-      global.fetch = vi.fn(() =>
-        Promise.reject(new Error('Network error'))
-      )
+      global.fetch = vi.fn(() => Promise.reject(new Error('Network error')))
 
       const { error, fetchBreweries } = useBreweries()
       await fetchBreweries()
