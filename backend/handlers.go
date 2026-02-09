@@ -293,3 +293,56 @@ func makeCreateFestivalHandler(db DatabaseInterface, allowedOrigins string) http
 		}
 	}
 }
+
+func makeCreateFestivalBreweriesLinkHandler(db DatabaseInterface, allowedOrigins string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		enableCORS(w, r, allowedOrigins)
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		if r.Method != "POST" {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Authorization header required", http.StatusUnauthorized)
+			return
+		}
+
+		token := strings.TrimPrefix(authHeader, "Bearer ")
+		if token == authHeader {
+			http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
+			return
+		}
+
+		_, err := db.VerifyToken(token)
+		if err != nil {
+			log.Printf("Token verification failed: %v", err)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		var festivalBreweriesLink FestivalBreweries
+		if err := json.NewDecoder(r.Body).Decode(&festivalBreweriesLink); err != nil {
+			log.Printf("Error decoding request body: %v", err)
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		err = db.CreateFestivalBreweriesLink(&festivalBreweriesLink)
+
+		if err != nil {
+			log.Printf("Error creating festival breweries link: %v", err)
+			http.Error(w, DefaultErrorMessage, http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set(HeaderContentType, ContentTypeJSON)
+		w.WriteHeader(http.StatusCreated)
+	}
+}

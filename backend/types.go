@@ -1,6 +1,12 @@
 package main
 
-import "time"
+import (
+	"container/list"
+	(
+)
+	"container/list"
+	"time"
+)
 
 type Location struct {
 	Latitude  float64 `json:"latitude"`
@@ -38,6 +44,11 @@ type FestivalDB struct {
 type FestivalBrewery struct {
 	FestivalID int64 `json:"festival_id"`
 	BreweryID  int64 `json:"brewery_id"`
+}
+
+type FestivalBreweries struct {
+	FestivalID int64 `json:"festival_id"`
+	BreweriesID []int64 `json:"brewery_ids"`
 }
 
 type Brewery struct {
@@ -95,4 +106,5 @@ type DatabaseInterface interface {
 	GetBreweries() ([]Brewery, error)
 	GetBreweriesByFestival(festivalID string) ([]Brewery, error)
 	CreateFestival(festival *FestivalDB) (*FestivalDB, error)
+	CreateFestivalBreweriesLink(festivalBreweries *FestivalBreweries) (error)
 }

@@ -24,6 +24,7 @@ func main() {
 	mux.HandleFunc(HealthPath, healthCheckHandler)
 	mux.HandleFunc(FestivalsPath, makeFestivalsHandler(db, config.AllowedOrigins))
 	mux.HandleFunc(CreateFestivalPath, makeCreateFestivalHandler(db, config.AllowedOrigins))
+	mux.HandleFunc(CreateFestivalBreweriesLinkPath, makeCreateFestivalBreweriesLinkHandler(db, config.AllowedOrigins))
 	mux.HandleFunc(FestivalsBreweriesPath, makeFestivalBreweriesHandler(db, config.AllowedOrigins))
 	mux.HandleFunc(BreweriesPath, makeBreweriesHandler(db, config.AllowedOrigins))
 	mux.HandleFunc(LoginPath, makeLoginHandler(db, config.AllowedOrigins))

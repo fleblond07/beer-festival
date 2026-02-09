@@ -240,3 +240,23 @@ func (db *Database) CreateFestival(festival *FestivalDB) (*FestivalDB, error) {
 
 	return &result[0], nil
 }
+
+func (db *Database) CreateFestivalBreweriesLink(festivalBreweries *FestivalBreweries) (error) {
+	rows := make([]FestivalBrewery, 0, len(festivalBreweries.BreweriesID))
+
+	for _, breweryId := range festivalBreweries.BreweriesID {
+		rows = append(rows, FestivalBrewery{
+			FestivalID: festivalBreweries.FestivalID,
+			BreweryID: breweryId,
+		})
+	}
+
+	_, _, err := db.client.From("festival_brewery").
+    	Insert(rows, false, "", "", "").Execute()
+
+	if err != nil {
+		return fmt.Errorf("failed to create festival breweries link: %w", err)
+	}
+
+	return nil
+}
