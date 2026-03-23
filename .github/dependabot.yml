@@ -15,3 +15,6 @@ updates:
              - "vite"
              - "vitest"
              - "@vitest/*"
+       eslint-stack:
+          patterns:
+            - "@typescript-eslint/*"
