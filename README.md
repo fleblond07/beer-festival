@@ -107,7 +107,6 @@ The Go backend provides a RESTful API for festival data:
 The backend supports the following environment variables:
 
 - `PORT` - Server port (default: `8080`)
-- `FESTIVALS_FILE` - Path to festivals JSON file (default: `./festivals.json`)
 
 ## 🚧 Future Enhancements
 

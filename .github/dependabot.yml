@@ -1,4 +1,5 @@
 version: 2
+
 updates:
   - package-ecosystem: "gomod"
     directory: "backend/"
@@ -8,3 +9,9 @@ updates:
     directory: "frontend/"
     schedule:
       interval: "weekly"
+    groups:
+       vite-stack:
+          patterns:
+             - "vite"
+             - "vitest"
+             - "@vitest/*"
