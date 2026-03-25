@@ -47,7 +47,7 @@
     "typescript": "5.9.3",
     "vite": "8.0.2",
     "vitest": "4.1.1",
-    "vue-tsc": "3.2.5"
+    "vue-tsc": "3.2.6"
   },
   "lint-staged": {
     "*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}": [
