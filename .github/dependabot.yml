@@ -18,3 +18,7 @@ updates:
        eslint-stack:
           patterns:
             - "@typescript-eslint/*"
+       typescript-stack:
+          patterns:
+            - "typescript"
+            - "@vue/tsconfig"
