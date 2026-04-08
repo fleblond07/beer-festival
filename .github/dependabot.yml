@@ -17,7 +17,10 @@ updates:
              - "@vitest/*"
        eslint-stack:
           patterns:
+            - "eslint"
+            - "eslint-*"
             - "@typescript-eslint/*"
+            - "vue-eslint-parser"
        typescript-stack:
           patterns:
             - "typescript"
