@@ -5,23 +5,43 @@ updates:
     directory: "backend/"
     schedule:
       interval: "weekly"
+
   - package-ecosystem: "npm"
     directory: "frontend/"
     schedule:
       interval: "weekly"
     groups:
-       vite-stack:
-          patterns:
-             - "vite"
-             - "vitest"
-             - "@vitest/*"
-       eslint-stack:
-          patterns:
-            - "eslint"
-            - "eslint-*"
-            - "@typescript-eslint/*"
-            - "vue-eslint-parser"
-       typescript-stack:
-          patterns:
-            - "typescript"
-            - "@vue/tsconfig"
+      vue-stack:
+        patterns:
+          - "vue"
+          - "vue-*"
+          - "@vue/*"
+          - "pinia"
+
+      vite-stack:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+          - "vitest"
+          - "@vitest/*"
+
+      eslint-stack:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@typescript-eslint/*"
+          - "vue-eslint-parser"
+
+      typescript-stack:
+        patterns:
+          - "typescript"
+          - "@types/*"
+
+      css-tooling:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "postcss"
+          - "autoprefixer"
+          - "prettier"
+          - "prettier-*"
