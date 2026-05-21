@@ -28,9 +28,9 @@
     "@types/node": "25.9.1",
     "@typescript-eslint/eslint-plugin": "8.59.3",
     "@typescript-eslint/parser": "8.59.3",
-    "@vitejs/plugin-vue": "6.0.6",
-    "@vitest/coverage-v8": "4.1.6",
-    "@vitest/ui": "4.1.6",
+    "@vitejs/plugin-vue": "6.0.7",
+    "@vitest/coverage-v8": "4.1.7",
+    "@vitest/ui": "4.1.7",
     "@vue/test-utils": "2.4.10",
     "@vue/tsconfig": "0.9.1",
     "autoprefixer": "10.5.0",
@@ -45,8 +45,8 @@
     "prettier": "3.8.3",
     "tailwindcss": "4.3.0",
     "typescript": "6.0.3",
-    "vite": "8.0.12",
-    "vitest": "4.1.6",
+    "vite": "8.0.13",
+    "vitest": "4.1.7",
     "vue-tsc": "3.2.8"
   },
   "lint-staged": {
