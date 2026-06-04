@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "2.106.2",
-    "dayjs": "1.11.20",
+    "dayjs": "1.11.21",
     "leaflet": "1.9.4",
     "pinia": "3.0.4",
     "vue": "3.5.34",
