@@ -19,8 +19,8 @@
     "dayjs": "1.11.21",
     "leaflet": "1.9.4",
     "pinia": "3.0.4",
-    "vue": "3.5.34",
-    "vue-router": "5.0.7"
+    "vue": "3.5.35",
+    "vue-router": "5.1.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.0",
@@ -31,7 +31,7 @@
     "@vitejs/plugin-vue": "6.0.7",
     "@vitest/coverage-v8": "4.1.8",
     "@vitest/ui": "4.1.8",
-    "@vue/test-utils": "2.4.10",
+    "@vue/test-utils": "2.4.11",
     "@vue/tsconfig": "0.9.1",
     "autoprefixer": "10.5.0",
     "eslint": "9.39.4",
@@ -47,7 +47,7 @@
     "typescript": "6.0.3",
     "vite": "8.0.16",
     "vitest": "4.1.8",
-    "vue-tsc": "3.3.2"
+    "vue-tsc": "3.3.3"
   },
   "lint-staged": {
     "*.{vue,js,jsx,cjs,mjs,ts,tsx,cts,mts}": [
