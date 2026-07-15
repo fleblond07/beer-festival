@@ -34,11 +34,11 @@ updates:
           - "eslint"
           - "eslint-*"
           - "@typescript-eslint/*"
+          - "typescript"
           - "vue-eslint-parser"
 
       typescript-stack:
         patterns:
-          - "typescript"
           - "@types/*"
 
       css-tooling:
