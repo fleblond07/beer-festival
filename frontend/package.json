@@ -15,7 +15,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.110.1",
+    "@supabase/supabase-js": "2.110.5",
     "dayjs": "1.11.21",
     "leaflet": "1.9.4",
     "pinia": "3.0.4",
