@@ -15,19 +15,19 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@supabase/supabase-js": "2.110.8",
+    "@supabase/supabase-js": "2.109.0",
     "dayjs": "1.11.21",
     "leaflet": "1.9.4",
     "pinia": "3.0.4",
     "vue": "3.5.40",
-    "vue-router": "5.2.0"
+    "vue-router": "4.6.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",
     "@types/leaflet": "1.9.21",
-    "@types/node": "26.1.2",
-    "@typescript-eslint/eslint-plugin": "8.64.0",
-    "@typescript-eslint/parser": "8.64.0",
+    "@types/node": "24.10.2",
+    "@typescript-eslint/eslint-plugin": "8.46.4",
+    "@typescript-eslint/parser": "8.46.4",
     "@vitejs/plugin-vue": "6.0.8",
     "@vitest/coverage-v8": "4.1.10",
     "@vitest/ui": "4.1.10",
@@ -37,16 +37,17 @@
     "eslint": "9.39.5",
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-prettier": "5.5.6",
-    "eslint-plugin-vue": "10.9.2",
+    "eslint-plugin-vue": "10.5.1",
     "husky": "9.1.7",
-    "jsdom": "29.1.1",
-    "lint-staged": "17.0.8",
+    "jsdom": "28.0.0",
+    "lint-staged": "16.2.7",
     "postcss": "8.5.24",
     "prettier": "3.9.6",
     "tailwindcss": "4.3.3",
-    "typescript": "6.0.3",
+    "typescript": "5.9.3",
     "vite": "8.1.5",
     "vitest": "4.1.10",
+    "vue-eslint-parser": "10.2.0",
     "vue-tsc": "3.3.8"
   },
   "lint-staged": {

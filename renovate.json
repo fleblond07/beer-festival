@@ -1,0 +1,45 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "constraints": {
+    "node": "20.20.2"
+  },
+  "constraintsFiltering": "strict",
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["frontend/package.json"],
+      "matchPackageNames": ["vue", "vue-router", "pinia", "@vue/**", "@vitejs/plugin-vue", "vue-tsc"],
+      "groupName": "frontend vue stack",
+      "groupSlug": "frontend-vue-stack"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["frontend/package.json"],
+      "matchPackageNames": ["vite", "vitest", "@vitest/**", "@vue/test-utils", "jsdom"],
+      "groupName": "frontend test and build stack",
+      "groupSlug": "frontend-test-build-stack"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["frontend/package.json"],
+      "matchPackageNames": ["eslint", "@eslint/**", "eslint-*", "@typescript-eslint/**", "typescript", "vue-eslint-parser", "@types/node"],
+      "groupName": "frontend lint and typescript stack",
+      "groupSlug": "frontend-lint-typescript-stack"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["frontend/package.json"],
+      "matchPackageNames": ["tailwindcss", "@tailwindcss/**", "postcss", "autoprefixer", "prettier", "prettier-*", "eslint-config-prettier", "eslint-plugin-prettier"],
+      "groupName": "frontend css and formatting stack",
+      "groupSlug": "frontend-css-formatting-stack"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchFileNames": ["frontend/package.json"],
+      "matchPackageNames": ["@supabase/**"],
+      "groupName": "frontend supabase stack",
+      "groupSlug": "frontend-supabase-stack"
+    }
+  ]
+}
