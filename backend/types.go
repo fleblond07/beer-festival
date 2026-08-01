@@ -41,13 +41,13 @@ type FestivalBrewery struct {
 }
 
 type Brewery struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	City        string `json:"city"`
-	Website     string `json:"website"`
-	Logo        string `json:"logo"`
-	FestivalCount int `json:"festivalCount"`
+	ID            int64  `json:"id"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	City          string `json:"city"`
+	Website       string `json:"website"`
+	Logo          string `json:"logo"`
+	FestivalCount int    `json:"festivalCount"`
 }
 
 type BreweryDB struct {
@@ -62,8 +62,8 @@ type BreweryDB struct {
 type Config struct {
 	Port           string
 	AllowedOrigins string
-	SupabaseURL    string
-	SupabaseKey    string
+	DatabaseURL    string
+	JWTSecret      string
 }
 
 type LoginRequest struct {

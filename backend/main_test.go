@@ -15,8 +15,8 @@ func TestGetConfig(t *testing.T) {
 	t.Run("uses values from environment variables", func(t *testing.T) {
 		os.Setenv("PORT", "3000")
 		os.Setenv("ALLOWED_ORIGINS", "http://localhost:5173")
-		os.Setenv("SUPABASE_URL", "https://test.supabase.co")
-		os.Setenv("SUPABASE_KEY", "test-key")
+		os.Setenv("DATABASE_URL", "postgres://test:test:5432/test?sslmode=disable")
+		os.Setenv("JWT_SECRET", "test-secret")
 		defer os.Clearenv()
 
 		config := getConfig()
@@ -27,11 +27,11 @@ func TestGetConfig(t *testing.T) {
 		if config.AllowedOrigins != "http://localhost:5173" {
 			t.Errorf("Expected allowed origins http://localhost:5173, got %s", config.AllowedOrigins)
 		}
-		if config.SupabaseURL != "https://test.supabase.co" {
-			t.Errorf("Expected Supabase URL https://test.supabase.co, got %s", config.SupabaseURL)
+		if config.DatabaseURL != "postgres://test:test:5432/test?sslmode=disable" {
+			t.Errorf("Expected Database URL postgres://test:test:5432/test?sslmode=disable, got %s", config.DatabaseURL)
 		}
-		if config.SupabaseKey != "test-key" {
-			t.Errorf("Expected Supabase key test-key, got %s", config.SupabaseKey)
+		if config.JWTSecret != "test-secret" {
+			t.Errorf("Expected JWT secret test-secret, got %s", config.JWTSecret)
 		}
 	})
 
@@ -45,11 +45,11 @@ func TestGetConfig(t *testing.T) {
 		if config.AllowedOrigins != "" {
 			t.Errorf("Expected empty allowed origins, got %s", config.AllowedOrigins)
 		}
-		if config.SupabaseURL != "" {
-			t.Errorf("Expected empty Supabase URL, got %s", config.SupabaseURL)
+		if config.DatabaseURL != "" {
+			t.Errorf("Expected empty Database URL, got %s", config.DatabaseURL)
 		}
-		if config.SupabaseKey != "" {
-			t.Errorf("Expected empty Supabase key, got %s", config.SupabaseKey)
+		if config.JWTSecret != "" {
+			t.Errorf("Expected empty JWT secret, got %s", config.JWTSecret)
 		}
 	})
 }
@@ -225,7 +225,7 @@ type MockDatabase struct {
 	verifyTokenFunc            func(token string) (*User, error)
 	getFestivalsFunc           func() ([]Festival, error)
 	getBreweriesByFestivalFunc func(festivalID string) ([]Brewery, error)
-	getBreweriesFunc func() ([]Brewery, error)
+	getBreweriesFunc           func() ([]Brewery, error)
 	createFestivalFunc         func(festival *FestivalDB) (*FestivalDB, error)
 }
 
