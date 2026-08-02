@@ -21,7 +21,7 @@ Feel free to run a copy of this website, below instruction on features and how t
 
 - Node.js 22.x or higher
 - npm 10.x or higher
-- Go 1.x or higher for local backend development
+- Go 1.21.1 or higher for local backend development
 - Docker and Docker Compose for the full stack
 - `pg_dump` and `psql` when transferring data from Supabase
 

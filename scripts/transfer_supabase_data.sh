@@ -6,6 +6,7 @@ if [[ -z "${SUPABASE_DATABASE_URL:-}" ]]; then
   exit 1
 fi
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DATABASE_URL="${DATABASE_URL:-postgres://beer_festival:beer_festival@localhost:5432/beer_festival?sslmode=disable}"
 DUMP_FILE="${DUMP_FILE:-/tmp/beer-festival-supabase-data.sql}"
 for binary in pg_dump psql; do
@@ -36,14 +37,8 @@ SELECT setval(pg_get_serial_sequence('breweries', 'id'), COALESCE((SELECT MAX(id
 SQL
 
 if [[ -n "${ADMIN_EMAIL:-}" && -n "${ADMIN_PASSWORD:-}" ]]; then
-  psql "$TARGET_DATABASE_URL" \
-    --set=admin_email="$ADMIN_EMAIL" \
-    --set=admin_password="$ADMIN_PASSWORD" <<'SQL'
-INSERT INTO users (email, password_hash)
-VALUES (:'admin_email', crypt(:'admin_password', gen_salt('bf')))
-ON CONFLICT (email) DO UPDATE
-SET password_hash = EXCLUDED.password_hash;
-SQL
+  export ADMIN_EMAIL ADMIN_PASSWORD
+  psql "$TARGET_DATABASE_URL" --file="$SCRIPT_DIR/../db/init/admin-user-upsert.psql"
 fi
 
 echo "Transferred Supabase public table data into $TARGET_DATABASE_URL"

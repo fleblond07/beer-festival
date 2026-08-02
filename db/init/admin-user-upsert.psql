@@ -1,0 +1,7 @@
+\getenv admin_email ADMIN_EMAIL
+\getenv admin_password ADMIN_PASSWORD
+
+INSERT INTO users (email, password_hash)
+VALUES (:'admin_email', crypt(:'admin_password', gen_salt('bf')))
+ON CONFLICT (email) DO UPDATE
+SET password_hash = EXCLUDED.password_hash;

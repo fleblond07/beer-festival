@@ -40,3 +40,4 @@ CREATE TABLE IF NOT EXISTS festivals_breweries (
 
 CREATE INDEX IF NOT EXISTS idx_festivals_start_date ON festivals(start_date);
 CREATE INDEX IF NOT EXISTS idx_festivals_breweries_brewery_id ON festivals_breweries(brewery_id);
+CREATE INDEX IF NOT EXISTS idx_users_lower_email ON users (lower(email));
