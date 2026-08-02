@@ -45,7 +45,7 @@ func TestDatabaseTokenVerification(t *testing.T) {
 	user := User{ID: "user-1", Email: "admin@example.com"}
 
 	t.Run("verifies a signed token", func(t *testing.T) {
-		token, err := db.signToken(user, time.Hour)
+		token, err := db.signToken(user, time.Hour, tokenTypeAccess)
 		if err != nil {
 			t.Fatalf("Expected token to be signed, got error: %v", err)
 		}
@@ -61,7 +61,7 @@ func TestDatabaseTokenVerification(t *testing.T) {
 	})
 
 	t.Run("rejects a tampered token", func(t *testing.T) {
-		token, err := db.signToken(user, time.Hour)
+		token, err := db.signToken(user, time.Hour, tokenTypeAccess)
 		if err != nil {
 			t.Fatalf("Expected token to be signed, got error: %v", err)
 		}
@@ -76,7 +76,7 @@ func TestDatabaseTokenVerification(t *testing.T) {
 	})
 
 	t.Run("rejects an expired token", func(t *testing.T) {
-		token, err := db.signToken(user, -time.Hour)
+		token, err := db.signToken(user, -time.Hour, tokenTypeAccess)
 		if err != nil {
 			t.Fatalf("Expected token to be signed, got error: %v", err)
 		}
@@ -84,6 +84,30 @@ func TestDatabaseTokenVerification(t *testing.T) {
 		_, err = db.VerifyToken(token)
 		if err == nil {
 			t.Error("Expected expired token to be rejected")
+		}
+	})
+
+	t.Run("rejects a refresh token", func(t *testing.T) {
+		token, err := db.signToken(user, time.Hour, tokenTypeRefresh)
+		if err != nil {
+			t.Fatalf("Expected token to be signed, got error: %v", err)
+		}
+
+		_, err = db.VerifyToken(token)
+		if err == nil {
+			t.Error("Expected refresh token to be rejected")
+		}
+	})
+
+	t.Run("rejects a token without a type", func(t *testing.T) {
+		token, err := db.signToken(user, time.Hour, "")
+		if err != nil {
+			t.Fatalf("Expected token to be signed, got error: %v", err)
+		}
+
+		_, err = db.VerifyToken(token)
+		if err == nil {
+			t.Error("Expected missing token type to be rejected")
 		}
 	})
 }

@@ -2,12 +2,10 @@ services:
   postgres:
     image: postgres:17-alpine
     container_name: beer-festival-postgres
-    ports:
-      - "5432:5432"
     environment:
-      - POSTGRES_DB=${POSTGRES_DB:-beer_festival}
-      - POSTGRES_USER=${POSTGRES_USER:-beer_festival}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-beer_festival}
+      - POSTGRES_DB=${POSTGRES_DB:?POSTGRES_DB is required}
+      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
       - ADMIN_EMAIL=${ADMIN_EMAIL:-}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
     volumes:
@@ -32,8 +30,8 @@ services:
     environment:
       - PORT=1337
       - ALLOWED_ORIGINS=*
-      - DATABASE_URL=postgres://${POSTGRES_USER:-beer_festival}:${POSTGRES_PASSWORD:-beer_festival}@postgres:5432/${POSTGRES_DB:-beer_festival}?sslmode=disable
-      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - DATABASE_URL=postgres://${POSTGRES_USER:?POSTGRES_USER is required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}@postgres:5432/${POSTGRES_DB:?POSTGRES_DB is required}?sslmode=disable
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET is required}
     depends_on:
       postgres:
         condition: service_healthy

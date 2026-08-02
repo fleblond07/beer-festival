@@ -267,12 +267,12 @@ func (db *Database) Login(email, password string) (*LoginResponse, error) {
 		return nil, fmt.Errorf("authentication failed: %w", err)
 	}
 
-	accessToken, err := db.signToken(user, 24*time.Hour)
+	accessToken, err := db.signToken(user, 24*time.Hour, tokenTypeAccess)
 	if err != nil {
 		return nil, err
 	}
 
-	refreshToken, err := db.signToken(user, 30*24*time.Hour)
+	refreshToken, err := db.signToken(user, 30*24*time.Hour, tokenTypeRefresh)
 	if err != nil {
 		return nil, err
 	}
@@ -289,22 +289,32 @@ func (db *Database) VerifyToken(token string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+	if payload.TokenType != tokenTypeAccess {
+		return nil, fmt.Errorf("invalid token type")
+	}
 
 	return &User{ID: payload.Subject, Email: payload.Email}, nil
 }
 
+const (
+	tokenTypeAccess  = "access"
+	tokenTypeRefresh = "refresh"
+)
+
 type tokenPayload struct {
 	Subject   string `json:"sub"`
 	Email     string `json:"email"`
+	TokenType string `json:"token_type"`
 	ExpiresAt int64  `json:"exp"`
 	IssuedAt  int64  `json:"iat"`
 }
 
-func (db *Database) signToken(user User, ttl time.Duration) (string, error) {
+func (db *Database) signToken(user User, ttl time.Duration, tokenType string) (string, error) {
 	header := map[string]string{"alg": "HS256", "typ": "JWT"}
 	payload := tokenPayload{
 		Subject:   user.ID,
 		Email:     user.Email,
+		TokenType: tokenType,
 		ExpiresAt: time.Now().Add(ttl).Unix(),
 		IssuedAt:  time.Now().Unix(),
 	}
