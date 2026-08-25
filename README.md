@@ -25,11 +25,36 @@ Feel free to run a copy of this website, below instruction on features and how t
 - Docker and Docker Compose for the full stack
 - `pg_dump` and `psql` when transferring data from Supabase
 
+### Configure environment
+
+Copy `.env.example` to `.env` and fill in the required values before starting anything:
+
+```bash
+cp .env.example .env
+```
+
+- `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` - required, used to initialize Postgres
+- `DATABASE_URL` - required, Postgres connection string for the backend
+- `JWT_SECRET` - required, HMAC secret used to sign bearer tokens
+- `ADMIN_EMAIL`, `ADMIN_PASSWORD` - optional; set both to have Docker create/update an admin user on first init
+
+`docker-compose` reads `.env` from the project root automatically. When running the backend outside Docker (`make backend`), export `DATABASE_URL`, `JWT_SECRET`, and optionally `PORT` in your shell instead.
+
 ### Installation
 
 ```bash
 make install
 ```
+
+### Start Postgres
+
+The backend needs a reachable Postgres instance, including for local (non-Docker) backend development:
+
+```bash
+docker-compose up -d postgres
+```
+
+### Run the app
 
 ```bash
 make dev
@@ -39,15 +64,9 @@ make backend
 make frontend
 ```
 
-When running the backend outside Docker, set:
+### Docker Compose (full stack)
 
-```bash
-export DATABASE_URL='postgres://beer_festival:beer_festival@localhost:5432/beer_festival?sslmode=disable'
-export JWT_SECRET='replace-with-a-long-random-secret'
-export PORT=1337
-```
-
-### Docker Compose
+With `.env` configured as above:
 
 ```bash
 docker-compose up --build
@@ -61,16 +80,7 @@ This starts:
 - Backend on `http://localhost:1337`
 - Frontend on `http://localhost:1338`
 
-Optional first-run admin user:
-
-```bash
-ADMIN_EMAIL=admin@example.com \
-ADMIN_PASSWORD='change-me' \
-JWT_SECRET='replace-with-a-long-random-secret' \
-docker-compose up --build
-```
-
-The admin user is created only when the Postgres volume is initialized. For an existing volume, insert or update the `users` table manually, or run the transfer script with `ADMIN_EMAIL` and `ADMIN_PASSWORD` set.
+The admin user is created only when the Postgres volume is initialized and `ADMIN_EMAIL`/`ADMIN_PASSWORD` are both set. For an existing volume, insert or update the `users` table manually, or run the transfer script with `ADMIN_EMAIL` and `ADMIN_PASSWORD` set.
 
 ## Transfer Supabase Data
 
@@ -88,11 +98,13 @@ bash scripts/transfer_supabase_data.sh
 
 The script truncates and reloads these public tables: `festivals`, `breweries`, and `festivals_breweries`. Supabase Auth passwords cannot be exported directly, so create local admin accounts with `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
 
-## Build for Production
+## Build the frontend
 
 ```bash
 make build
 ```
+
+This builds only the frontend (`frontend/dist`); the Go backend is run with `go run .` or built separately with `go build`.
 
 ## Testing
 

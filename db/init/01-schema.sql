@@ -40,4 +40,11 @@ CREATE TABLE IF NOT EXISTS festivals_breweries (
 
 CREATE INDEX IF NOT EXISTS idx_festivals_start_date ON festivals(start_date);
 CREATE INDEX IF NOT EXISTS idx_festivals_breweries_brewery_id ON festivals_breweries(brewery_id);
-CREATE INDEX IF NOT EXISTS idx_users_lower_email ON users (lower(email));
+DELETE FROM users
+WHERE id NOT IN (
+    SELECT DISTINCT ON (lower(email)) id
+    FROM users
+    ORDER BY lower(email), created_at, id
+);
+DROP INDEX IF EXISTS idx_users_lower_email;
+CREATE UNIQUE INDEX idx_users_lower_email ON users (lower(email));
