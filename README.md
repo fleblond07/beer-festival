@@ -23,7 +23,6 @@ Feel free to run a copy of this website, below instruction on features and how t
 - npm 10.x or higher
 - Go 1.21.1 or higher for local backend development
 - Docker and Docker Compose for the full stack
-- `pg_dump` and `psql` when transferring data from Supabase
 
 ### Configure environment
 
@@ -80,23 +79,7 @@ This starts:
 - Backend on `http://localhost:1337`
 - Frontend on `http://localhost:1338`
 
-The admin user is created only when the Postgres volume is initialized and `ADMIN_EMAIL`/`ADMIN_PASSWORD` are both set. For an existing volume, insert or update the `users` table manually, or run the transfer script with `ADMIN_EMAIL` and `ADMIN_PASSWORD` set.
-
-## Transfer Supabase Data
-
-The app now uses its own Docker Postgres database. To copy the existing Supabase public table data into it:
-
-```bash
-docker-compose up -d postgres
-
-SUPABASE_DATABASE_URL='postgres://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres?sslmode=require' \
-DATABASE_URL='postgres://beer_festival:beer_festival@localhost:5432/beer_festival?sslmode=disable' \
-ADMIN_EMAIL=admin@example.com \
-ADMIN_PASSWORD='change-me' \
-bash scripts/transfer_supabase_data.sh
-```
-
-The script truncates and reloads these public tables: `festivals`, `breweries`, and `festivals_breweries`. Supabase Auth passwords cannot be exported directly, so create local admin accounts with `ADMIN_EMAIL` and `ADMIN_PASSWORD`.
+The admin user is created only when the Postgres volume is initialized and `ADMIN_EMAIL`/`ADMIN_PASSWORD` are both set. For an existing volume, insert or update the `users` table manually.
 
 ## Build the frontend
 

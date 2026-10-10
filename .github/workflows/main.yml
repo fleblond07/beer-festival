@@ -15,5 +15,9 @@ jobs:
       VPS_HOST: ${{secrets.VPS_HOST}}
       VPS_USER: ${{secrets.VPS_USER}}
       VPS_SSH_KEY: ${{secrets.VPS_SSH_KEY}}
-      SUPABASE_URL: ${{secrets.SUPABASE_URL}}
-      SUPABASE_KEY: ${{secrets.SUPABASE_KEY}}
+      POSTGRES_DB: ${{secrets.POSTGRES_DB}}
+      POSTGRES_USER: ${{secrets.POSTGRES_USER}}
+      POSTGRES_PASSWORD: ${{secrets.POSTGRES_PASSWORD}}
+      JWT_SECRET: ${{secrets.JWT_SECRET}}
+      ADMIN_EMAIL: ${{secrets.ADMIN_EMAIL}}
+      ADMIN_PASSWORD: ${{secrets.ADMIN_PASSWORD}}
