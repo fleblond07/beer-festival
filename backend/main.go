@@ -13,12 +13,13 @@ import (
 func main() {
 	config := getConfig()
 
-	db, err := NewDatabase(config.SupabaseURL, config.SupabaseKey)
+	db, err := NewDatabase(config.DatabaseURL, config.JWTSecret)
 	if err != nil {
 		log.Fatalf("Failed to initialize database: %v", err)
 	}
+	defer db.Close()
 
-	log.Println("Successfully connected to Supabase")
+	log.Println("Successfully connected to Postgres")
 
 	mux := http.NewServeMux()
 	mux.HandleFunc(HealthPath, healthCheckHandler)
